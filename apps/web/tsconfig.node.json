@@ -1,0 +1,12 @@
+{
+  "extends": "@workspace/typescript-config/base.json",
+  "include": ["vite.config.ts"],
+  "compilerOptions": {
+    "checkJs": true,
+    "composite": true,
+    "types": ["node"],
+    "lib": ["ES2022"],
+    "target": "ES2022",
+    "module": "ES2022"
+  }
+}

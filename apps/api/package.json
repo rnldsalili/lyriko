@@ -1,0 +1,19 @@
+{
+  "name": "api",
+  "type": "module",
+  "scripts": {
+    "cf-typegen": "wrangler types --env-interface CloudflareBindings",
+    "deploy": "wrangler deploy --minify",
+    "dev": "wrangler dev",
+    "format": "prettier --write .",
+    "lint": "eslint . --fix"
+  },
+  "dependencies": {
+    "hono": "^4.9.6"
+  },
+  "devDependencies": {
+    "@workspace/eslint-config": "workspace:*",
+    "@workspace/typescript-config": "workspace:*",
+    "wrangler": "^4.4.0"
+  }
+}

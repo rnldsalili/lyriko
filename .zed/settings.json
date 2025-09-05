@@ -1,0 +1,13 @@
+{
+  "format_on_save": "on",
+  "code_actions_on_format": {
+    "source.fixAll.eslint": true
+  },
+  "lsp": {
+    "eslint": {
+      "settings": {
+        "workingDirectories": ["apps/web", "apps/api", "packages/eslint-config"]
+      }
+    }
+  }
+}

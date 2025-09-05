@@ -1,0 +1,17 @@
+{
+  "name": "lyriko",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "bun run --filter=\"./apps/*\" dev",
+    "lint": "bun run --filter=\"*\" lint",
+    "format": "bun run --filter=\"*\" format"
+  },
+  "devDependencies": {
+    "eslint": "^9.34.0",
+    "prettier": "^3.6.2"
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "extends": "@workspace/typescript-config/react-library.json",
+  "include": [
+    ".react-router/types/**/*",
+    "app/**/*",
+    "app/**/.server/**/*",
+    "app/**/.client/**/*",
+    "workers/**/*",
+    "worker-configuration.d.ts"
+  ],
+  "compilerOptions": {
+    "checkJs": true,
+    "composite": true,
+    "rootDirs": [".", "./.react-router/types"],
+    "types": ["@cloudflare/workers-types", "vite/client"],
+    "baseUrl": ".",
+    "paths": {
+      "@/web/*": ["./web/*"]
+    }
+  }
+}
