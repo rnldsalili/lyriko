@@ -1,5 +1,6 @@
 # Dependencies
 node_modules/
+node_modules
 .pnp
 .pnp.js
 
@@ -8,11 +9,22 @@ node_modules/
 /dist
 /.next/
 /out/
+build/
 
 # Development
 .turbo/
 .wrangler/
 .react-router/
+
+# React Router
+/.react-router/
+/build/
+
+# Cloudflare
+.mf
+.wrangler
+.dev.vars*
+!.dev.vars.example
 
 # Environment variables
 .env
@@ -20,6 +32,13 @@ node_modules/
 .env.development.local
 .env.test.local
 .env.production.local
+.env.production
+.dev.vars
+.env*
+!.env.example
+
+# Keep environment variables out of version control
+.env
 
 # Logs
 npm-debug.log*
@@ -46,6 +65,8 @@ coverage/
 jspm_packages/
 
 # TypeScript cache
+*.tsbuildinfo
+/node_modules/
 *.tsbuildinfo
 
 # Optional npm cache directory
@@ -82,6 +103,8 @@ pnpm-lock.yaml
 .vscode-test
 
 # yarn v2
+.yarn/
+!.yarn/releases
 .yarn/cache
 .yarn/unplugged
 .yarn/build-state.yml
@@ -90,7 +113,12 @@ pnpm-lock.yaml
 
 # IDE
 .vscode/
+!.vscode/launch.json
+!.vscode/*.code-snippets
 .idea/
+.idea/workspace.xml
+.idea/usage.statistics.xml
+.idea/shelf
 *.swp
 *.swo
 *~
@@ -107,3 +135,6 @@ Thumbs.db
 # Temporary folders
 tmp/
 temp/
+
+# Generated files
+packages/prisma/generated/

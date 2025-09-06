@@ -1,0 +1,18 @@
+{
+  "$schema": "../../node_modules/wrangler/config-schema.json",
+  "name": "prisma",
+  "compatibility_date": "2025-04-04",
+  "main": "./workers/app.ts",
+  "vars": {},
+  "observability": {
+    "enabled": true,
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "lyriko",
+      "database_id": "21380bbe-19a9-4661-aab6-cecc1bad1032",
+      "migrations_dir": "./migrations",
+    },
+  ],
+}

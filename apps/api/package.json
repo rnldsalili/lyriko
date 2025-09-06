@@ -9,11 +9,12 @@
     "lint": "eslint . --fix"
   },
   "dependencies": {
-    "hono": "^4.9.6"
+    "hono": "^4.9.6",
+    "zod": "^4.1.5"
   },
   "devDependencies": {
     "@workspace/eslint-config": "workspace:*",
-    "@workspace/typescript-config": "workspace:*",
-    "wrangler": "^4.4.0"
+    "@workspace/prisma": "workspace:*",
+    "@workspace/typescript-config": "workspace:*"
   }
 }

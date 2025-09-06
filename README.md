@@ -68,6 +68,15 @@ Both applications are configured for Cloudflare Workers deployment. Make sure yo
 2. Cloudflare account set up
 3. Required environment variables in `.env` files
 
+### Database
+
+bunx --bun wrangler d1 migrations create lyriko create_user_table
+bunx --bun prisma migrate diff --from-empty --to-schema-datamodel ./prisma/schema.prisma --script --output migrations/0001_create_user_table.sql
+
+bunx --bun wrangler d1 migrations apply lyriko --local
+bunx --bun wrangler d1 migrations apply lyriko --remote
+bunx --bun prisma generate
+
 ## 🚢 Deployment
 
 Both apps are optimized for Cloudflare Workers:

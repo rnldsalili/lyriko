@@ -1,11 +1,9 @@
 {
-  "$schema": "node_modules/wrangler/config-schema.json",
+  "$schema": "../../node_modules/wrangler/config-schema.json",
   "name": "api",
   "main": "src/index.ts",
   "compatibility_date": "2025-09-05",
-  // "compatibility_flags": [
-  //   "nodejs_compat"
-  // ],
+  // "compatibility_flags": ["nodejs_compat"],
   // "vars": {
   //   "MY_VAR": "my-variable"
   // },
@@ -21,13 +19,13 @@
   //     "bucket_name": "my-bucket"
   //   }
   // ],
-  // "d1_databases": [
-  //   {
-  //     "binding": "MY_DB",
-  //     "database_name": "my-database",
-  //     "database_id": ""
-  //   }
-  // ],
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "lyriko",
+      "database_id": "21380bbe-19a9-4661-aab6-cecc1bad1032",
+    },
+  ],
   // "ai": {
   //   "binding": "AI"
   // },

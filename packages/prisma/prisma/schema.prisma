@@ -1,0 +1,492 @@
+generator client {
+  provider        = "prisma-client-js"
+  output          = "../generated/prisma"
+  previewFeatures = ["driverAdapters"]
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// User Management
+model User {
+  id       String @id @default(cuid())
+  email    String @unique
+  username String @unique
+  password String
+
+  // Profile information
+  firstName String?
+  lastName  String?
+  bio       String?
+  avatar    String?
+
+  // User preferences
+  isPublic        Boolean   @default(true)
+  emailVerified   Boolean   @default(false)
+  emailVerifiedAt DateTime?
+
+  // Audit fields
+  createdAt DateTime @default(now())
+  createdBy String
+  updatedAt DateTime @updatedAt
+  updatedBy String
+
+  // Relationships
+  createdSongs    Song[]              @relation("SongCreator")
+  createdArtists  Artist[]            @relation("ArtistCreator")
+  createdAlbums   Album[]             @relation("AlbumCreator")
+  createdGenres   Genre[]             @relation("GenreCreator")
+  playlists       Playlist[]
+  favorites       UserFavorite[]
+  songRatings     SongRating[]
+  songComments    SongComment[]
+  followedArtists UserFollowsArtist[]
+  collaborations  SongCollaborator[]
+
+  @@index([email])
+  @@index([username])
+  @@index([createdAt])
+  @@map("user")
+}
+
+// Artist Management
+model Artist {
+  id         String  @id @default(cuid())
+  name       String
+  slug       String  @unique
+  bio        String?
+  image      String?
+  website    String?
+  spotifyUrl String?
+
+  // Metadata
+  isVerified Boolean @default(false)
+  country    String?
+  debutYear  Int?
+
+  // Audit fields
+  createdAt DateTime @default(now())
+  createdBy String
+  updatedAt DateTime @updatedAt
+  updatedBy String
+
+  // Relationships
+  creator   User                @relation("ArtistCreator", fields: [createdBy], references: [id])
+  songs     SongArtist[]
+  albums    AlbumArtist[]
+  followers UserFollowsArtist[]
+
+  @@index([name])
+  @@index([slug])
+  @@index([createdAt])
+  @@index([isVerified])
+  @@map("artist")
+}
+
+// Genre Management
+model Genre {
+  id          String  @id @default(cuid())
+  name        String  @unique
+  slug        String  @unique
+  description String?
+  color       String? // For UI theming
+
+  // Audit fields
+  createdAt DateTime @default(now())
+  createdBy String
+  updatedAt DateTime @updatedAt
+  updatedBy String
+
+  // Relationships
+  creator User         @relation("GenreCreator", fields: [createdBy], references: [id])
+  songs   SongGenre[]
+  albums  AlbumGenre[]
+
+  @@index([name])
+  @@index([slug])
+  @@map("genre")
+}
+
+// Album Management
+model Album {
+  id          String    @id @default(cuid())
+  title       String
+  slug        String    @unique
+  description String?
+  coverImage  String?
+  releaseDate DateTime?
+
+  // Album metadata
+  albumType   AlbumType @default(ALBUM)
+  totalTracks Int?
+
+  // Audit fields
+  createdAt DateTime @default(now())
+  createdBy String
+  updatedAt DateTime @updatedAt
+  updatedBy String
+
+  // Relationships
+  creator User          @relation("AlbumCreator", fields: [createdBy], references: [id])
+  songs   Song[]
+  artists AlbumArtist[]
+  genres  AlbumGenre[]
+
+  @@index([title])
+  @@index([slug])
+  @@index([releaseDate])
+  @@index([createdAt])
+  @@index([albumType])
+  @@map("album")
+}
+
+// Song Management - Core entity
+model Song {
+  id     String @id @default(cuid())
+  title  String
+  slug   String @unique
+  lyrics String
+
+  // Song metadata
+  duration    Int? // in seconds
+  trackNumber Int?
+  albumId     String?
+  releaseDate DateTime?
+  language    String?
+  isExplicit  Boolean   @default(false)
+  isPublished Boolean   @default(false)
+
+  // Lyrics metadata
+  lyricsSource     String? // Source of lyrics (manual, imported, etc.)
+  lyricsVerified   Boolean   @default(false)
+  lyricsVerifiedBy String?
+  lyricsVerifiedAt DateTime?
+
+  // External links
+  spotifyUrl    String?
+  youtubeUrl    String?
+  appleMusicUrl String?
+
+  // Stats (denormalized for performance)
+  viewCount     Int @default(0)
+  favoriteCount Int @default(0)
+
+  // Audit fields
+  createdAt DateTime @default(now())
+  createdBy String
+  updatedAt DateTime @updatedAt
+  updatedBy String
+
+  // Relationships
+  creator       User               @relation("SongCreator", fields: [createdBy], references: [id])
+  album         Album?             @relation(fields: [albumId], references: [id])
+  artists       SongArtist[]
+  genres        SongGenre[]
+  collaborators SongCollaborator[]
+  favorites     UserFavorite[]
+  ratings       SongRating[]
+  comments      SongComment[]
+  playlistItems PlaylistItem[]
+
+  @@index([title])
+  @@index([slug])
+  @@index([albumId])
+  @@index([createdBy])
+  @@index([isPublished])
+  @@index([releaseDate])
+  @@index([language])
+  @@index([createdAt])
+  @@index([viewCount])
+  @@index([favoriteCount])
+  @@map("song")
+}
+
+// Many-to-many relationship tables
+model SongArtist {
+  id       String     @id @default(cuid())
+  songId   String
+  artistId String
+  role     ArtistRole @default(PERFORMER) // PRIMARY, FEATURED, PRODUCER, etc.
+
+  // Audit fields
+  createdAt DateTime @default(now())
+  createdBy String
+  updatedAt DateTime @updatedAt
+  updatedBy String
+
+  // Relationships
+  song   Song   @relation(fields: [songId], references: [id], onDelete: Cascade)
+  artist Artist @relation(fields: [artistId], references: [id], onDelete: Cascade)
+
+  @@unique([songId, artistId, role])
+  @@index([songId])
+  @@index([artistId])
+  @@index([role])
+  @@map("song_artist")
+}
+
+model AlbumArtist {
+  id       String     @id @default(cuid())
+  albumId  String
+  artistId String
+  role     ArtistRole @default(PRIMARY)
+
+  // Audit fields
+  createdAt DateTime @default(now())
+  createdBy String
+  updatedAt DateTime @updatedAt
+  updatedBy String
+
+  // Relationships
+  album  Album  @relation(fields: [albumId], references: [id], onDelete: Cascade)
+  artist Artist @relation(fields: [artistId], references: [id], onDelete: Cascade)
+
+  @@unique([albumId, artistId, role])
+  @@index([albumId])
+  @@index([artistId])
+  @@map("album_artist")
+}
+
+model SongGenre {
+  id      String @id @default(cuid())
+  songId  String
+  genreId String
+
+  // Audit fields
+  createdAt DateTime @default(now())
+  createdBy String
+  updatedAt DateTime @updatedAt
+  updatedBy String
+
+  // Relationships
+  song  Song  @relation(fields: [songId], references: [id], onDelete: Cascade)
+  genre Genre @relation(fields: [genreId], references: [id], onDelete: Cascade)
+
+  @@unique([songId, genreId])
+  @@index([songId])
+  @@index([genreId])
+  @@map("song_genre")
+}
+
+model AlbumGenre {
+  id      String @id @default(cuid())
+  albumId String
+  genreId String
+
+  // Audit fields
+  createdAt DateTime @default(now())
+  createdBy String
+  updatedAt DateTime @updatedAt
+  updatedBy String
+
+  // Relationships
+  album Album @relation(fields: [albumId], references: [id], onDelete: Cascade)
+  genre Genre @relation(fields: [genreId], references: [id], onDelete: Cascade)
+
+  @@unique([albumId, genreId])
+  @@index([albumId])
+  @@index([genreId])
+  @@map("album_genre")
+}
+
+// Song collaboration
+model SongCollaborator {
+  id     String           @id @default(cuid())
+  songId String
+  userId String
+  role   CollaboratorRole
+
+  // Permissions
+  canEdit   Boolean @default(false)
+  canDelete Boolean @default(false)
+
+  // Audit fields
+  createdAt DateTime @default(now())
+  createdBy String
+  updatedAt DateTime @updatedAt
+  updatedBy String
+
+  // Relationships
+  song Song @relation(fields: [songId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([songId, userId])
+  @@index([songId])
+  @@index([userId])
+  @@map("song_collaborator")
+}
+
+// Playlist Management
+model Playlist {
+  id          String  @id @default(cuid())
+  name        String
+  description String?
+  coverImage  String?
+  isPublic    Boolean @default(true)
+  userId      String
+
+  // Audit fields
+  createdAt DateTime @default(now())
+  createdBy String
+  updatedAt DateTime @updatedAt
+  updatedBy String
+
+  // Relationships
+  user  User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  items PlaylistItem[]
+
+  @@index([userId])
+  @@index([isPublic])
+  @@index([createdAt])
+  @@map("playlist")
+}
+
+model PlaylistItem {
+  id         String @id @default(cuid())
+  playlistId String
+  songId     String
+  position   Int
+
+  // Audit fields
+  createdAt DateTime @default(now())
+  createdBy String
+  updatedAt DateTime @updatedAt
+  updatedBy String
+
+  // Relationships
+  playlist Playlist @relation(fields: [playlistId], references: [id], onDelete: Cascade)
+  song     Song     @relation(fields: [songId], references: [id], onDelete: Cascade)
+
+  @@unique([playlistId, songId])
+  @@unique([playlistId, position])
+  @@index([playlistId])
+  @@index([songId])
+  @@map("playlist_item")
+}
+
+// User Interactions
+model UserFavorite {
+  id     String @id @default(cuid())
+  userId String
+  songId String
+
+  // Audit fields
+  createdAt DateTime @default(now())
+  createdBy String
+  updatedAt DateTime @updatedAt
+  updatedBy String
+
+  // Relationships
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  song Song @relation(fields: [songId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, songId])
+  @@index([userId])
+  @@index([songId])
+  @@index([createdAt])
+  @@map("user_favorite")
+}
+
+model UserFollowsArtist {
+  id       String @id @default(cuid())
+  userId   String
+  artistId String
+
+  // Audit fields
+  createdAt DateTime @default(now())
+  createdBy String
+  updatedAt DateTime @updatedAt
+  updatedBy String
+
+  // Relationships
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  artist Artist @relation(fields: [artistId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, artistId])
+  @@index([userId])
+  @@index([artistId])
+  @@map("user_follows_artist")
+}
+
+model SongRating {
+  id     String @id @default(cuid())
+  userId String
+  songId String
+  rating Int // 1-5 stars
+
+  // Audit fields
+  createdAt DateTime @default(now())
+  createdBy String
+  updatedAt DateTime @updatedAt
+  updatedBy String
+
+  // Relationships
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  song Song @relation(fields: [songId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, songId])
+  @@index([userId])
+  @@index([songId])
+  @@index([rating])
+  @@map("song_rating")
+}
+
+model SongComment {
+  id      String @id @default(cuid())
+  userId  String
+  songId  String
+  content String
+
+  // Comment threading
+  parentId String?
+
+  // Moderation
+  isHidden Boolean @default(false)
+
+  // Audit fields
+  createdAt DateTime @default(now())
+  createdBy String
+  updatedAt DateTime @updatedAt
+  updatedBy String
+
+  // Relationships
+  user    User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  song    Song          @relation(fields: [songId], references: [id], onDelete: Cascade)
+  parent  SongComment?  @relation("CommentReplies", fields: [parentId], references: [id])
+  replies SongComment[] @relation("CommentReplies")
+
+  @@index([userId])
+  @@index([songId])
+  @@index([parentId])
+  @@index([createdAt])
+  @@index([isHidden])
+  @@map("song_comment")
+}
+
+// Enums
+enum AlbumType {
+  ALBUM
+  SINGLE
+  EP
+  COMPILATION
+  SOUNDTRACK
+  MIXTAPE
+}
+
+enum ArtistRole {
+  PRIMARY
+  FEATURED
+  PRODUCER
+  SONGWRITER
+  COMPOSER
+  PERFORMER
+}
+
+enum CollaboratorRole {
+  EDITOR
+  REVIEWER
+  TRANSLATOR
+  CONTRIBUTOR
+}
