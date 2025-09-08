@@ -1,139 +1,147 @@
-# Project Architecture & Stack
+# Lyriko Monorepo
 
-> **Important**: This file (AGENTS.md) is the canonical source for project documentation. CLAUDE.md and GEMINI.md are symbolic links to this file. Always update this file directly rather than the symbolic links.
+> **Important**: This file is the canonical source. CLAUDE.md and GEMINI.md are symbolic links.
 
-## Overview
+## Stack
 
-Lyriko is built as a monorepo with separate frontend and API applications, both designed for deployment on Cloudflare Workers.
+- **Bun.js** package manager
+- **Frontend**: React + React Router 7 → Cloudflare Workers
+- **API**: Hono.js + Prisma SQLite D1 → Cloudflare Workers
 
-## Tech Stack
-
-### Package Manager
-
-- **Bun.js** - Fast JavaScript runtime and package manager
-
-### Frontend (`apps/web`)
-
-- **Framework**: React
-- **Routing**: React Router 7
-- **Deployment**: Cloudflare Workers
-
-### API (`apps/api`)
-
-- **Framework**: Hono.js
-- **Runtime**: Cloudflare Workers
-- **Database**: Prisma ORM with SQLite D1
-- **Deployment**: Cloudflare Workers
-
-## Project Structure
+## Structure
 
 ```
 lyriko/
 ├── apps/
-│   ├── web/          # React frontend with React Router 7
-│   └── api/          # Hono.js API server
+│   ├── web/          # React frontend
+│   └── api/          # Hono.js API
 ├── packages/
-│   ├── eslint-config/      # Shared ESLint configuration
-│   ├── prisma/             # Prisma ORM with SQLite D1 database
-│   └── typescript-config/  # Shared TypeScript configuration
-└── ...
+│   ├── constants/    # Shared enums
+│   ├── eslint-config/
+│   ├── prisma/       # DB ORM + D1
+│   ├── typescript-config/
+│   └── validators/   # Zod schemas
 ```
 
-## Deployment Strategy
+## Import Rules
 
-All services are architected to leverage Cloudflare Workers for:
-
-- Global edge deployment
-- Serverless execution
-- Low latency response times
-- Automatic scaling
-
-## Development Notes
-
-- Frontend and API are decoupled for independent scaling and deployment
-- Both applications are optimized for the Cloudflare Workers runtime environment
-- The monorepo structure allows for shared dependencies and consistent tooling
-
-## Import Conventions
-
-### Path Mapping
-
-**ALWAYS use TypeScript path mapping instead of relative imports across all applications.**
-
-Each application has its own path mapping configuration:
-
-**API (`apps/api`)**:
+**Always use TypeScript path mapping, never relative imports.**
 
 ```typescript
-// ✅ Use path mapping
+// ✅ API imports
 import { initializePrisma } from '@/api/lib/db';
-import { UserService } from '@/api/services/user';
 
-// ❌ Avoid relative imports
-import { initializePrisma } from '../../lib/db.js';
+// ✅ Web imports
+import { Button } from '@/web/components/Button';
+
+// ❌ Avoid
 import { UserService } from '../services/user.js';
 ```
 
-**Frontend (`apps/web`)**:
+## Packages
 
-```typescript
-// ✅ Use path mapping (configure as needed)
-import { Button } from '@/web/components/Button';
-import { useAuth } from '@/web/hooks/useAuth';
+- `@workspace/constants` - Shared enums/constants
+- `@workspace/eslint-config` - ESLint rules
+- `@workspace/typescript-config` - TS configs
+- `@workspace/prisma` - DB ORM + D1 adapter
+- `@workspace/validators` - Zod schemas + OpenAPI
 
-// ❌ Avoid relative imports
-import { Button } from '../../../components/Button';
-import { useAuth } from '../../hooks/useAuth';
-```
+## Database Rules
 
-## Shared Packages
-
-### ESLint Configuration (`packages/eslint-config`)
-
-- **Package**: `@workspace/eslint-config`
-- **Purpose**: Shared ESLint configuration for consistent code style across the workspace
-
-### TypeScript Configuration (`packages/typescript-config`)
-
-- **Package**: `@workspace/typescript-config`
-- **Purpose**: Shared TypeScript configuration with multiple presets
-
-### Prisma ORM (`packages/prisma`)
-
-- **Package**: `@workspace/prisma`
-- **Purpose**: Database ORM using Prisma with SQLite D1 for Cloudflare Workers
-- **Features**: Schema management, client generation, and D1 adapter integration
-
-## Database Guidelines
-
-### Model Standards
-
-When creating new database models, ensure they include the following audit fields:
-
-- **createdAt**: DateTime field for tracking record creation timestamp
-- **createdBy**: Field for tracking which user created the record
-- **updatedAt**: DateTime field for tracking last modification timestamp
-- **updatedBy**: Field for tracking which user last modified the record
-
-### Naming Conventions
-
-- All field names must use **camelCase** convention
-- Model names should use **PascalCase**
-- Database table names should be **singular** (not plural)
-- Database constraints and indexes should follow descriptive naming patterns
-
-### Example Model Structure
+### Required Audit Fields
 
 ```prisma
 model ExampleModel {
   id        String   @id @default(cuid())
-  name      String
-  // ... other fields
   createdAt DateTime @default(now())
   createdBy String
   updatedAt DateTime @updatedAt
   updatedBy String
-
   @@map("example_model")
 }
 ```
+
+### Naming
+
+- Fields: `camelCase`
+- Models: `PascalCase`
+- Tables: `singular`
+
+## Migrations
+
+### Steps
+
+1. **Create** (from `packages/prisma`):
+
+   ```bash
+   bunx --bun wrangler d1 migrations create lyriko <name>
+   ```
+
+2. **Generate SQL** (from `packages/prisma`):
+
+   ```bash
+   # Initial migration
+   bunx --bun prisma migrate diff --from-empty --to-schema-datamodel ./prisma/schema.prisma --script --output migrations/<file>.sql
+
+   # Schema changes
+   bunx --bun prisma migrate diff --from-local-d1 --to-schema-datamodel ./prisma/schema.prisma --script --output migrations/<file>.sql
+   ```
+
+3. **Apply** (local must be from `apps/api`):
+
+   ```bash
+   # Local (from apps/api only)
+   cd apps/api && bunx --bun wrangler d1 migrations apply lyriko --local
+
+   # Remote (from either directory)
+   bunx --bun wrangler d1 migrations apply lyriko --remote
+   ```
+
+4. **Generate client** (from `packages/prisma`):
+   ```bash
+   bunx --bun prisma generate
+   ```
+
+## Error Handling
+
+Use `handlePrismaError` utility (`apps/api/src/lib/prisma-errors.ts`):
+
+```typescript
+import { StatusCode } from '@workspace/constants/status-code';
+import { handlePrismaError } from '@/api/lib/prisma-errors';
+
+try {
+  const entity = await prisma.entity.create({
+    data: {
+      ...entityData,
+      createdBy: <value>,
+      updatedBy: <value>,
+    },
+  });
+
+  return c.json(
+    {
+      status: StatusCode.CREATED,
+      data: entity,
+    },
+    StatusCode.CREATED,
+  );
+} catch (error) {
+  const prismaErrorResponse = handlePrismaError(error, {
+    allowedStatusCodes: [StatusCode.BAD_REQUEST, StatusCode.CONFLICT],
+    entityName: 'entity',
+    fieldMappings: {
+      firstName: 'first name', // Example mapping
+    },
+  });
+
+  if (prismaErrorResponse) {
+    return c.json(prismaErrorResponse, prismaErrorResponse.status);
+  }
+  throw error;
+}
+```
+
+**Error codes**: P2002 (duplicates), P2000 (too long), P2003 (FK violation), P2004 (constraint), P2011/P2012/P2013 (missing fields), P2025 (not found)
+
+**Rules**: Always use utility, specify `entityName` and `allowedStatusCodes`, map technical fields, return JSON with status code, let unhandled errors throw

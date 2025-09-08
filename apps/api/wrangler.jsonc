@@ -24,6 +24,7 @@
       "binding": "DB",
       "database_name": "lyriko",
       "database_id": "21380bbe-19a9-4661-aab6-cecc1bad1032",
+      "migrations_dir": "../../packages/prisma/migrations",
     },
   ],
   // "ai": {

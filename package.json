@@ -9,11 +9,13 @@
     "dev": "bun run --filter=\"./apps/*\" dev",
     "cf-typegen": "bun run --filter=\"*\" cf-typegen",
     "lint": "bun run --filter=\"*\" lint",
-    "format": "bun run --filter=\"*\" format"
+    "format": "bun run --filter=\"*\" format",
+    "typecheck": "bun run --filter=\"*\" typecheck"
   },
   "devDependencies": {
-    "eslint": "^9.34.0",
+    "eslint": "^9.35.0",
     "prettier": "^3.6.2",
-    "wrangler": "^4.34.0"
+    "wrangler": "^4.34.0",
+    "typescript": "^5.9.2"
   }
 }
