@@ -1,6 +1,9 @@
 import { z } from 'zod';
 import { extendZodWithOpenApi } from '@hono/zod-openapi';
-import { emailSchema } from '@workspace/validators/common';
+import {
+  emailSchema,
+  paginationResponseSchema,
+} from '@workspace/validators/common';
 
 extendZodWithOpenApi(z);
 
@@ -74,3 +77,8 @@ export const userResponseSchema = z
       .openapi({ example: '2023-01-01T00:00:00Z' }),
   })
   .openapi('User');
+
+export const usersListResponseSchema = z.object({
+  users: z.array(userResponseSchema),
+  pagination: paginationResponseSchema,
+});

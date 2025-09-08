@@ -2,6 +2,17 @@
 
 > **Important**: This file is the canonical source. CLAUDE.md and GEMINI.md are symbolic links.
 
+## Development Guidelines
+
+**Always follow existing implementations in the codebase to ensure consistency.**
+
+When adding new features or making changes:
+
+- Study similar existing code patterns and structures
+- Follow the same naming conventions, file organization, and architectural patterns
+- Use the same libraries, utilities, and approaches already established
+- Maintain consistency in error handling, validation, and response formats
+
 ## Stack
 
 - **Bun.js** package manager

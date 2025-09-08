@@ -4,7 +4,7 @@ import { extendZodWithOpenApi } from '@hono/zod-openapi';
 extendZodWithOpenApi(z);
 
 export const headerSchema = z.object({
-  authorization: z.string().describe('Authorization header').meta({
+  authorization: z.string().describe('Authorization header').openapi({
     example: 'Bearer <token>',
   }),
 });
@@ -14,14 +14,14 @@ export const commonGetListSchema = z.object({
     .number()
     .default(1)
     .describe('Page number for pagination')
-    .meta({
+    .openapi({
       example: 1,
     }),
   limit: z.coerce
     .number()
     .default(10)
     .describe('Number of items per page')
-    .meta({
+    .openapi({
       example: 10,
     }),
   search: z
@@ -30,13 +30,13 @@ export const commonGetListSchema = z.object({
     })
     .default('')
     .describe('Search query string')
-    .meta({
+    .openapi({
       example: 'search term',
     }),
 });
 
 export const commonGetOneSchema = z.object({
-  id: z.string().describe('Unique identifier').meta({
+  id: z.string().describe('Unique identifier').openapi({
     example: 'clm7x8y9z0000abcdef123456',
   }),
 });
@@ -48,7 +48,7 @@ export const nameSchema = z
   .min(1, 'Name must be atleast 1 character')
   .max(100, 'Name must contain at most 100 characters')
   .describe('Name field with 1-100 character limit')
-  .meta({
+  .openapi({
     example: 'Example Name',
   });
 
@@ -58,7 +58,7 @@ export const descriptionSchema = z
   })
   .max(1000, 'Description must contain at most 1000 characters')
   .describe('Description field with up to 1000 characters')
-  .meta({
+  .openapi({
     example: 'This is an example description that provides additional details.',
   });
 
@@ -67,7 +67,7 @@ export const isDefaultSchema = z
     message: 'Is default is required and must be a boolean',
   })
   .describe('Flag indicating if this is the default option')
-  .meta({
+  .openapi({
     example: false,
   });
 
@@ -80,7 +80,7 @@ export const emailSchema = z
     'Invalid email format',
   )
   .describe('Email address')
-  .meta({
+  .openapi({
     example: 'user@example.com',
   });
 

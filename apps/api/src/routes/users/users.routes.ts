@@ -4,13 +4,12 @@ import {
   notFoundResponseSchema,
   commonGetListSchema,
   commonGetOneSchema,
-  paginationResponseSchema,
 } from '@workspace/validators/common';
 import {
   createUserSchema,
   userResponseSchema,
+  usersListResponseSchema,
 } from '@workspace/validators/users';
-import { z } from 'zod';
 
 import { createRoute } from '@/api/lib/app';
 
@@ -73,10 +72,7 @@ export const getUsersRoute = createRoute({
       content: {
         'application/json': {
           schema: successResponseSchema.extend({
-            data: z.object({
-              users: z.array(userResponseSchema),
-              pagination: paginationResponseSchema,
-            }),
+            data: usersListResponseSchema,
           }),
         },
       },

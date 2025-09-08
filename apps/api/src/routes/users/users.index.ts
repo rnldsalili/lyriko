@@ -1,7 +1,6 @@
 import { createRouter } from '@/api/lib/app';
-
-import * as handlers from './users.handlers';
-import * as routes from './users.routes';
+import * as handlers from '@/api/routes/users/users.handlers';
+import * as routes from '@/api/routes/users/users.routes';
 
 const users = createRouter()
   .basePath('/users')

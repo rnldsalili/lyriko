@@ -2,8 +2,8 @@ import { StatusCode } from '@workspace/constants/status-code';
 
 import { handlePrismaError } from '@/api/lib/prisma-errors';
 
-import type { CreateUser, GetUsers } from './users.routes';
 import type { AppRouteHandler } from '@/api/lib/app';
+import type { CreateUser, GetUsers } from '@/api/routes/users/users.routes';
 
 export const getUsers: AppRouteHandler<GetUsers> = async (c) => {
   const prisma = c.get('prisma');
