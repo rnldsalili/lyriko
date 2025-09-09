@@ -10,4 +10,10 @@ export default defineConfig({
     reactRouter(),
     tsconfigPaths(),
   ],
+  server: {
+    port: 3010,
+  },
+  preview: {
+    port: 3010,
+  },
 });

@@ -77,6 +77,11 @@ bunx --bun wrangler d1 migrations apply lyriko --local
 bunx --bun wrangler d1 migrations apply lyriko --remote
 bunx --bun prisma generate
 
+### UI
+
+cd packages/ui
+bunx --bun shadcn@latest add button
+
 ## 🚢 Deployment
 
 Both apps are optimized for Cloudflare Workers:

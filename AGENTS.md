@@ -31,6 +31,7 @@ lyriko/
 │   ├── eslint-config/
 │   ├── prisma/       # DB ORM + D1
 │   ├── typescript-config/
+│   ├── ui/           # shadcn/ui components
 │   └── validators/   # Zod schemas
 ```
 
@@ -55,6 +56,7 @@ import { UserService } from '../services/user.js';
 - `@workspace/eslint-config` - ESLint rules
 - `@workspace/typescript-config` - TS configs
 - `@workspace/prisma` - DB ORM + D1 adapter
+- `@workspace/ui` - shadcn/ui React components
 - `@workspace/validators` - Zod schemas + OpenAPI
 
 ## Database Rules
@@ -156,3 +158,49 @@ try {
 **Error codes**: P2002 (duplicates), P2000 (too long), P2003 (FK violation), P2004 (constraint), P2011/P2012/P2013 (missing fields), P2025 (not found)
 
 **Rules**: Always use utility, specify `entityName` and `allowedStatusCodes`, map technical fields, return JSON with status code, let unhandled errors throw
+
+## UI Components
+
+The `@workspace/ui` package uses **shadcn/ui** for React components.
+
+### Adding New Components
+
+To add shadcn/ui components (e.g., Button, Card, etc.):
+
+```bash
+cd packages/ui
+bunx --bun shadcn@latest add button
+```
+
+### Usage
+
+Import UI components using TypeScript path mapping:
+
+```typescript
+// ✅ Correct import
+import { Button } from '@workspace/ui/components/button';
+
+// ❌ Avoid relative imports
+import { Button } from '../../packages/ui/components/button';
+```
+
+**Important**: Always use shadcn/ui CLI to add new components rather than creating them manually. This ensures proper component structure, theming, and TypeScript definitions.
+
+## shadcn/ui Component Usage
+
+When asked to use shadcn components, use the MCP server.
+
+### Planning Rule
+
+When asked to plan using anything related to shadcn:
+
+- Use the MCP server during planning
+- Apply components wherever components are applicable
+- Use whole blocks where possible (e.g., login page, calendar)
+
+### Implementation Rule
+
+When implementing:
+
+- First call the demo tool to see how it is used
+- Then implement it so that it is implemented correctly

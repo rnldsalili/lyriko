@@ -1,11 +1,12 @@
-import { Welcome } from '../welcome/welcome';
-
 import type { Route } from './+types/home';
 
 export function meta({}: Route.MetaArgs) {
   return [
-    { title: 'New React Router App' },
-    { name: 'description', content: 'Welcome to React Router!' },
+    { title: 'Lyriko - Home' },
+    {
+      name: 'description',
+      content: 'Welcome to Lyriko - Your lyrics management system',
+    },
   ];
 }
 
@@ -14,5 +15,15 @@ export function loader({ context }: Route.LoaderArgs) {
 }
 
 export default function Home({ loaderData }: Route.ComponentProps) {
-  return <Welcome message={loaderData.message} />;
+  return (
+    <div>
+      <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-6">
+        Welcome to Lyriko
+      </h1>
+      <p className="text-gray-600 dark:text-gray-300 text-lg">
+        Your comprehensive lyrics management system. Navigate through the menu
+        above to explore artists, albums, songs, genres, and playlists.
+      </p>
+    </div>
+  );
 }
