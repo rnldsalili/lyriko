@@ -3,6 +3,6 @@
   "compilerOptions": {
     "moduleResolution": "Bundler",
     "strict": true,
-    "skipLibCheck": true,
+    "skipLibCheck": true
   }
 }

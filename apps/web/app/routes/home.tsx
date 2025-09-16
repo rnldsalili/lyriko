@@ -14,6 +14,7 @@ export function loader({ context }: Route.LoaderArgs) {
   return { message: context.cloudflare.env.VALUE_FROM_CLOUDFLARE };
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export default function Home({ loaderData }: Route.ComponentProps) {
   return (
     <div>

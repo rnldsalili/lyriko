@@ -39,9 +39,9 @@ export const setThemeAtom = atom(null, (get, set, newTheme: Theme) => {
   }
 });
 
-// Initialize theme on first load
+// Initialize theme on first load (only if not already set by the blocking script)
 if (typeof window !== 'undefined') {
-  applyTheme(getInitialTheme());
+  // Don't reapply theme immediately since the blocking script already handled it
 
   // Listen for system theme changes
   window

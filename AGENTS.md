@@ -18,6 +18,7 @@ When adding new features or making changes:
 - **Bun.js** package manager
 - **Frontend**: React + React Router 7 → Cloudflare Workers
 - **API**: Hono.js + Prisma SQLite D1 → Cloudflare Workers
+- **Authentication**: Better Auth
 
 ## Structure
 
@@ -58,6 +59,10 @@ import { UserService } from '../services/user.js';
 - `@workspace/prisma` - DB ORM + D1 adapter
 - `@workspace/ui` - shadcn/ui React components
 - `@workspace/validators` - Zod schemas + OpenAPI
+
+## Validation Rules
+
+When creating new validation schemas, **always check `@workspace/validators/common` first** for available reusable validators before creating new ones.
 
 ## Database Rules
 
@@ -158,6 +163,41 @@ try {
 **Error codes**: P2002 (duplicates), P2000 (too long), P2003 (FK violation), P2004 (constraint), P2011/P2012/P2013 (missing fields), P2025 (not found)
 
 **Rules**: Always use utility, specify `entityName` and `allowedStatusCodes`, map technical fields, return JSON with status code, let unhandled errors throw
+
+## Authentication (Better Auth)
+
+Better Auth handles user authentication with Prisma adapter for database integration.
+
+### Schema Integration
+
+Better Auth models are integrated with the main Prisma schema:
+
+- `User` - Enhanced with better-auth fields (`name`, `email`, `emailVerified`, `image`)
+- `Session` - Auth sessions
+- `Account` - OAuth accounts and credentials
+- `Verification` - Email verification tokens
+
+### Configuration Files
+
+- **Backend**: `apps/api/src/lib/auth.ts` - Creates auth instances
+- **Frontend**: `apps/web/app/lib/auth.ts` - Auth client and hooks
+
+**Frontend** (React components):
+
+```typescript
+import { useSession, signIn, signOut } from '@/web/lib/auth';
+
+const { data: session, isLoading } = useSession();
+await signIn.email({ email, password });
+await signOut();
+```
+
+### Environment Detection
+
+Auth setup uses environment detection to avoid Cloudflare Workers compatibility issues:
+
+- Node.js (CLI): Uses regular PrismaClient
+- Cloudflare Workers: Uses D1 adapter via `createAuth()`
 
 ## UI Components
 

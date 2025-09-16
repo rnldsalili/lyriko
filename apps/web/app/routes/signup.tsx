@@ -1,0 +1,154 @@
+import { Button } from '@workspace/ui/base/button';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@workspace/ui/base/card';
+import { Input } from '@workspace/ui/base/input';
+import { Label } from '@workspace/ui/base/label';
+import { signupSchema, type SignupFormData } from '@workspace/validators/auth';
+import { useState } from 'react';
+import { Link, useNavigate } from 'react-router';
+
+import { signUp } from '@/web/lib/auth';
+
+export default function SignupPage() {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [name, setName] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
+  const navigate = useNavigate();
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (password !== confirmPassword) {
+      setError('Passwords do not match');
+      return;
+    }
+
+    if (password.length < 6) {
+      setError('Password must be at least 6 characters');
+      return;
+    }
+
+    setIsLoading(true);
+    setError('');
+
+    const { data, error } = await signUp.email(
+      {
+        email,
+        password,
+        name,
+        callbackURL: '/home',
+      },
+      {
+        onRequest: () => {
+          setIsLoading(true);
+          setError('');
+        },
+        onSuccess: () => {
+          setIsLoading(false);
+        },
+        onError: (ctx) => {
+          setError(ctx.error.message || 'Failed to create account');
+          setIsLoading(false);
+        },
+      },
+    );
+
+    setIsLoading(false);
+  };
+
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+      <Card className="w-full max-w-md">
+        <CardHeader className="space-y-1">
+          <CardTitle className="text-2xl text-center">
+            Create an account
+          </CardTitle>
+          <CardDescription className="text-center">
+            Enter your details below to create your account
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <form className="space-y-4" onSubmit={handleSubmit}>
+            <div className="space-y-2">
+              <Label htmlFor="name">Full Name</Label>
+              <Input
+                required
+                id="name"
+                onChange={(e) => setName(e.target.value)}
+                placeholder="John Doe"
+                type="text"
+                value={name}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="email">Email</Label>
+              <Input
+                required
+                id="email"
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="john@example.com"
+                type="email"
+                value={email}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="password">Password</Label>
+              <Input
+                required
+                id="password"
+                minLength={6}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Enter your password"
+                type="password"
+                value={password}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="confirmPassword">Confirm Password</Label>
+              <Input
+                required
+                id="confirmPassword"
+                minLength={6}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                placeholder="Confirm your password"
+                type="password"
+                value={confirmPassword}
+              />
+            </div>
+
+            {error && (
+              <div className="text-red-600 text-sm text-center bg-red-50 p-2 rounded">
+                {error}
+              </div>
+            )}
+
+            <Button className="w-full" disabled={isLoading} type="submit">
+              {isLoading ? 'Creating account...' : 'Sign Up'}
+            </Button>
+          </form>
+
+          <div className="mt-4 text-center text-sm">
+            Already have an account?{' '}
+            <Link
+              className="text-blue-600 hover:text-blue-500 font-medium"
+              to="/login"
+            >
+              Sign in
+            </Link>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}

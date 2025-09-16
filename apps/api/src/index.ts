@@ -4,6 +4,7 @@ import { logger } from 'hono/logger';
 import { swaggerUI } from '@hono/swagger-ui';
 
 import { createRouter } from '@/api/lib/app.js';
+import { createAuth } from '@/api/lib/auth';
 import createPrisma from '@/api/middleware/prisma';
 import { registerRoutes } from '@/api/routes';
 
@@ -19,9 +20,28 @@ export type Env = {
 const app = createRouter();
 
 // Global middleware
-app.use('*', cors());
+// app.use('*', cors());
+
+app.use(
+  '/api/auth/*',
+  cors({
+    origin: 'http://localhost:3010',
+    allowHeaders: ['Content-Type', 'Authorization'],
+    allowMethods: ['POST', 'GET', 'OPTIONS'],
+    exposeHeaders: ['Content-Length'],
+    maxAge: 600,
+    credentials: true,
+  }),
+);
+
 app.use('*', createPrisma);
 app.use(logger());
+
+// Better Auth routes
+app.on(['GET', 'POST'], '/api/auth/*', (c) => {
+  const auth = createAuth(c);
+  return auth.handler(c.req.raw);
+});
 
 // Routes
 registerRoutes(app);
@@ -44,6 +64,7 @@ app.get('/', (c) => {
     version: '1.0.0',
     endpoints: {
       users: '/api/users',
+      auth: '/api/auth',
       docs: '/doc',
       openapi: '/openapi.json',
     },

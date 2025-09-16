@@ -1,5 +1,5 @@
 import js from '@eslint/js';
-import stylisticTs from '@stylistic/eslint-plugin-ts';
+import stylistic from '@stylistic/eslint-plugin';
 import eslintConfigPrettier from 'eslint-config-prettier/flat';
 import importPlugin from 'eslint-plugin-import';
 import onlyWarn from 'eslint-plugin-only-warn';
@@ -20,7 +20,7 @@ export const config = [
   {
     plugins: {
       import: importPlugin,
-      '@stylistic/ts': stylisticTs,
+      '@stylistic': stylistic,
     },
     rules: {
       'comma-dangle': ['error', 'always-multiline'],
@@ -83,5 +83,47 @@ export const config = [
     },
   },
   { plugins: { onlyWarn } },
-  { ignores: ['dist/**', 'node_modules/**', '.turbo/**', '.wrangler/**'] },
+  {
+    ignores: [
+      // Dependencies
+      'node_modules/**',
+      'apps/*/node_modules/**',
+      'packages/*/node_modules/**',
+      'bun.lockb',
+      'package-lock.json',
+
+      // Build outputs
+      'dist/**',
+      'build/**',
+      '.next/**',
+      'out/**',
+
+      // Development and tooling
+      '.turbo/**',
+      '.wrangler/**',
+      '.react-router/**',
+
+      // Generated files
+      '**/*.d.ts',
+      '!**/worker-configuration.d.ts',
+      '!packages/eslint-config/eslint-plugin-only-warn.d.ts',
+
+      // Logs
+      '**/*.log',
+      '**/npm-debug.log*',
+      '**/yarn-debug.log*',
+      '**/yarn-error.log*',
+
+      // Environment files
+      '**/.env*',
+
+      // IDE
+      '**/.vscode/**',
+      '**/.idea/**',
+
+      // OS
+      '**/.DS_Store',
+      '**/Thumbs.db',
+    ],
+  },
 ];

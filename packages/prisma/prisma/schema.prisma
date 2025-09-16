@@ -9,30 +9,34 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// User Management
+// User Management (Enhanced with better-auth fields)
 model User {
-  id       String @id @default(cuid())
-  email    String @unique
-  password String
+  id            String  @id @default(cuid())
+  name          String?
+  email         String  @unique
+  emailVerified Boolean @default(false)
+  image         String?
 
-  // Profile information
+  // Profile information (existing fields)
   firstName String?
   lastName  String?
   bio       String?
-  avatar    String?
 
   // User preferences
   isPublic        Boolean   @default(true)
-  emailVerified   Boolean   @default(false)
   emailVerifiedAt DateTime?
 
   // Audit fields
   createdAt DateTime @default(now())
-  createdBy String
+  createdBy String   @default("system") // Default for better-auth compatibility
   updatedAt DateTime @updatedAt
-  updatedBy String
+  updatedBy String   @default("system") // Default for better-auth compatibility
 
-  // Relationships
+  // Better-auth relationships
+  sessions Session[]
+  accounts Account[]
+
+  // Existing relationships
   createdSongs    Song[]              @relation("SongCreator")
   createdArtists  Artist[]            @relation("ArtistCreator")
   createdAlbums   Album[]             @relation("AlbumCreator")
@@ -47,6 +51,51 @@ model User {
   @@index([email])
   @@index([createdAt])
   @@map("user")
+}
+
+// Better-auth models
+model Session {
+  id        String   @id @default(cuid())
+  expiresAt DateTime
+  token     String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  ipAddress String?
+  userAgent String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("session")
+}
+
+model Account {
+  id                    String    @id @default(cuid())
+  accountId             String
+  providerId            String
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  @@map("account")
+}
+
+model Verification {
+  id         String   @id @default(cuid())
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@map("verification")
 }
 
 // Artist Management
