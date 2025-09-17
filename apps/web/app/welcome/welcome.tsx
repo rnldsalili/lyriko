@@ -20,15 +20,15 @@ export function Welcome({ message }: { message: string }) {
           </div>
         </header>
         <div className="max-w-[300px] w-full space-y-6 px-4">
-          <nav className="rounded-3xl border border-gray-200 p-6 dark:border-gray-700 space-y-4">
-            <p className="leading-6 text-gray-700 dark:text-gray-200 text-center">
+          <nav className="rounded-3xl border border-border p-6 space-y-4">
+            <p className="leading-6 text-muted-foreground text-center">
               What&apos;s next?
             </p>
             <ul>
               {resources.map(({ href, text, icon }) => (
                 <li key={href}>
                   <a
-                    className="group flex items-center gap-3 self-stretch p-3 leading-normal text-blue-700 hover:underline dark:text-blue-500"
+                    className="group flex items-center gap-3 self-stretch p-3 leading-normal text-primary hover:underline"
                     href={href}
                     rel="noreferrer"
                     target="_blank"
@@ -53,7 +53,7 @@ const resources = [
     text: 'React Router Docs',
     icon: (
       <svg
-        className="stroke-gray-600 group-hover:stroke-current dark:stroke-gray-300"
+        className="stroke-muted-foreground group-hover:stroke-current"
         fill="none"
         height="20"
         viewBox="0 0 20 20"
@@ -73,7 +73,7 @@ const resources = [
     text: 'Join Discord',
     icon: (
       <svg
-        className="stroke-gray-600 group-hover:stroke-current dark:stroke-gray-300"
+        className="stroke-muted-foreground group-hover:stroke-current"
         fill="none"
         height="20"
         viewBox="0 0 24 20"

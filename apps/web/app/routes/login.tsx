@@ -9,27 +9,32 @@ import {
 import { Input } from '@workspace/ui/base/input';
 import { Label } from '@workspace/ui/base/label';
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router';
+import { Link, useSearchParams } from 'react-router';
 
+import { AuthGuard } from '@/web/components/auth-guard';
 import { signIn } from '@/web/lib/auth';
 
-export default function LoginPage() {
+function LoginForm() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
-  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     setError('');
 
-    const { data, error } = await signIn.email(
+    // Get the redirect URL from search params, default to /home
+    const redirectTo = searchParams.get('redirect');
+    const callbackURL = redirectTo ? decodeURIComponent(redirectTo) : '/home';
+
+    await signIn.email(
       {
         email,
         password,
-        callbackURL: '/home',
+        callbackURL,
       },
       {
         onRequest: () => {
@@ -121,5 +126,13 @@ export default function LoginPage() {
         </Card>
       </div>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <AuthGuard>
+      <LoginForm />
+    </AuthGuard>
   );
 }

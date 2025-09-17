@@ -8,20 +8,20 @@ import {
 } from '@workspace/ui/base/card';
 import { Input } from '@workspace/ui/base/input';
 import { Label } from '@workspace/ui/base/label';
-import { signupSchema, type SignupFormData } from '@workspace/validators/auth';
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router';
+import { Link, useSearchParams } from 'react-router';
 
+import { AuthGuard } from '@/web/components/auth-guard';
 import { signUp } from '@/web/lib/auth';
 
-export default function SignupPage() {
+function SignupForm() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [name, setName] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
-  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -39,12 +39,16 @@ export default function SignupPage() {
     setIsLoading(true);
     setError('');
 
-    const { data, error } = await signUp.email(
+    // Get the redirect URL from search params, default to /home
+    const redirectTo = searchParams.get('redirect');
+    const callbackURL = redirectTo ? decodeURIComponent(redirectTo) : '/home';
+
+    await signUp.email(
       {
         email,
         password,
         name,
-        callbackURL: '/home',
+        callbackURL,
       },
       {
         onRequest: () => {
@@ -65,7 +69,7 @@ export default function SignupPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen flex items-center justify-center bg-background py-12 px-4 sm:px-6 lg:px-8">
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-1">
           <CardTitle className="text-2xl text-center">
@@ -150,5 +154,13 @@ export default function SignupPage() {
         </CardContent>
       </Card>
     </div>
+  );
+}
+
+export default function SignupPage() {
+  return (
+    <AuthGuard>
+      <SignupForm />
+    </AuthGuard>
   );
 }

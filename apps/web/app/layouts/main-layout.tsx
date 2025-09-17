@@ -1,8 +1,9 @@
 import { Link, Outlet, useLocation } from 'react-router';
 
+import { ProtectedRoute } from '@/web/components/protected-route';
 import ThemeToggle from '@/web/components/theme-toggle';
 
-export default function MainLayout() {
+function MainLayoutContent() {
   const location = useLocation();
 
   const navigation = [
@@ -16,15 +17,12 @@ export default function MainLayout() {
   ];
 
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-950">
-      <header className="border-b border-gray-200 dark:border-gray-800">
+    <div className="min-h-screen bg-background">
+      <header className="border-b border-border">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center">
-              <Link
-                className="text-xl font-bold text-gray-900 dark:text-white"
-                to="/home"
-              >
+              <Link className="text-xl font-bold text-foreground" to="/home">
                 Lyriko
               </Link>
             </div>
@@ -36,8 +34,8 @@ export default function MainLayout() {
                     to={item.path}
                     className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
                       location.pathname === item.path
-                        ? 'text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20'
-                        : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800'
+                        ? 'text-primary bg-primary/10'
+                        : 'text-muted-foreground hover:text-foreground hover:bg-accent'
                     }`}
                   >
                     {item.name}
@@ -53,5 +51,13 @@ export default function MainLayout() {
         <Outlet />
       </main>
     </div>
+  );
+}
+
+export default function MainLayout() {
+  return (
+    <ProtectedRoute>
+      <MainLayoutContent />
+    </ProtectedRoute>
   );
 }

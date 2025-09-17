@@ -244,3 +244,61 @@ When implementing:
 
 - First call the demo tool to see how it is used
 - Then implement it so that it is implemented correctly
+
+## Theme and Styling Guidelines
+
+**Always use the theme system defined in `packages/ui/src/styles/globals.css`.**
+
+### CSS Custom Properties
+
+The project uses CSS custom properties for theming with automatic dark mode support. **Never use hardcoded colors.**
+
+```typescript
+// ✅ Use theme colors
+className = 'bg-background text-foreground';
+className = 'border-border bg-card text-card-foreground';
+className = 'bg-primary text-primary-foreground';
+
+// ❌ Avoid hardcoded colors
+className = 'bg-white text-black dark:bg-gray-900 dark:text-white';
+className = 'border-gray-200 dark:border-gray-800';
+```
+
+### Available Theme Colors
+
+Use these semantic color tokens from the theme system:
+
+- **Layout**: `background`, `foreground`, `border`
+- **Content**: `card`, `card-foreground`, `popover`, `popover-foreground`
+- **Interactive**: `primary`, `primary-foreground`, `secondary`, `secondary-foreground`
+- **States**: `muted`, `muted-foreground`, `accent`, `accent-foreground`, `destructive`
+- **Forms**: `input`, `ring`
+- **Sidebar**: `sidebar`, `sidebar-foreground`, `sidebar-primary`, etc.
+- **Charts**: `chart-1` through `chart-5`
+
+### Dark Mode Support
+
+The theme automatically handles dark mode through CSS custom properties. Components should:
+
+- Use semantic color tokens instead of specific colors
+- Rely on the `.dark` class for dark mode switching
+- Never manually implement dark mode logic
+
+### Examples
+
+```typescript
+// ✅ Correct theming
+<div className="bg-card border-border rounded-lg p-4">
+  <h2 className="text-card-foreground font-semibold">Title</h2>
+  <p className="text-muted-foreground">Description</p>
+  <Button className="bg-primary text-primary-foreground">Action</Button>
+</div>
+
+// ✅ Loading spinner with theme colors
+<div className="animate-spin border-b-2 border-foreground" />
+
+// ❌ Avoid hardcoded colors
+<div className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700">
+  <span className="text-gray-900 dark:text-white">Text</span>
+</div>
+```
