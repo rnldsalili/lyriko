@@ -15,10 +15,12 @@ import {
 
 import { createRoute } from '@/api/lib/app';
 
+const TAGS = ['Artists'];
+
 export const createArtistRoute = createRoute({
   method: 'post',
   path: '/',
-  tags: ['Artists'],
+  tags: TAGS,
   summary: 'Create a new artist',
   description: 'Creates a new artist with the provided information',
   request: {
@@ -63,7 +65,7 @@ export const createArtistRoute = createRoute({
 export const getArtistsRoute = createRoute({
   method: 'get',
   path: '/',
-  tags: ['Artists'],
+  tags: TAGS,
   summary: 'Get all artists',
   description: 'Retrieves a paginated list of artists',
   request: {
@@ -94,7 +96,7 @@ export const getArtistsRoute = createRoute({
 export const getArtistRoute = createRoute({
   method: 'get',
   path: '/{id}',
-  tags: ['Artists'],
+  tags: TAGS,
   summary: 'Get artist by ID',
   description: 'Retrieves a specific artist by its ID',
   request: {
@@ -125,7 +127,7 @@ export const getArtistRoute = createRoute({
 export const updateArtistRoute = createRoute({
   method: 'put',
   path: '/{id}',
-  tags: ['Artists'],
+  tags: TAGS,
   summary: 'Update artist',
   description: 'Updates an existing artist with the provided information',
   request: {
@@ -179,7 +181,7 @@ export const updateArtistRoute = createRoute({
 export const deleteArtistRoute = createRoute({
   method: 'delete',
   path: '/{id}',
-  tags: ['Artists'],
+  tags: TAGS,
   summary: 'Delete artist',
   description: 'Deletes an existing artist',
   request: {

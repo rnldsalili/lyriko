@@ -11,7 +11,7 @@ interface AuthGuardProps {
 
 export function AuthGuard({
   children,
-  defaultRedirectTo = '/home',
+  defaultRedirectTo = '/',
 }: AuthGuardProps) {
   const { data: session, isPending } = useSession();
   const navigate = useNavigate();

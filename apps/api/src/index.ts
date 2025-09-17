@@ -9,11 +9,14 @@ import createPrisma from '@/api/middleware/prisma';
 import { registerRoutes } from '@/api/routes';
 
 import type { PrismaClient } from '@workspace/prisma';
+import type { Session, User } from 'better-auth';
 
 export type Env = {
   Bindings: CloudflareBindings;
   Variables: {
     prisma: PrismaClient;
+    user: User | null;
+    session: Session | null;
   };
 };
 

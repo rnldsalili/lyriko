@@ -15,10 +15,12 @@ import {
 
 import { createRoute } from '@/api/lib/app';
 
+const TAGS = ['Genres'];
+
 export const createGenreRoute = createRoute({
   method: 'post',
   path: '/',
-  tags: ['Genres'],
+  tags: TAGS,
   summary: 'Create a new genre',
   description: 'Creates a new genre with the provided information',
   request: {
@@ -63,7 +65,7 @@ export const createGenreRoute = createRoute({
 export const getGenresRoute = createRoute({
   method: 'get',
   path: '/',
-  tags: ['Genres'],
+  tags: TAGS,
   summary: 'Get all genres',
   description: 'Retrieves a paginated list of genres',
   request: {
@@ -94,7 +96,7 @@ export const getGenresRoute = createRoute({
 export const getGenreRoute = createRoute({
   method: 'get',
   path: '/{id}',
-  tags: ['Genres'],
+  tags: TAGS,
   summary: 'Get genre by ID',
   description: 'Retrieves a specific genre by its ID',
   request: {
@@ -125,7 +127,7 @@ export const getGenreRoute = createRoute({
 export const updateGenreRoute = createRoute({
   method: 'put',
   path: '/{id}',
-  tags: ['Genres'],
+  tags: TAGS,
   summary: 'Update genre',
   description: 'Updates an existing genre with the provided information',
   request: {
@@ -179,7 +181,7 @@ export const updateGenreRoute = createRoute({
 export const deleteGenreRoute = createRoute({
   method: 'delete',
   path: '/{id}',
-  tags: ['Genres'],
+  tags: TAGS,
   summary: 'Delete genre',
   description: 'Deletes an existing genre',
   request: {

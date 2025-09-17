@@ -15,10 +15,12 @@ import {
 
 import { createRoute } from '@/api/lib/app';
 
+const TAGS = ['Songs'];
+
 export const createSongRoute = createRoute({
   method: 'post',
   path: '/',
-  tags: ['Songs'],
+  tags: TAGS,
   summary: 'Create a new song',
   description: 'Creates a new song with the provided information',
   request: {
@@ -63,7 +65,7 @@ export const createSongRoute = createRoute({
 export const getSongsRoute = createRoute({
   method: 'get',
   path: '/',
-  tags: ['Songs'],
+  tags: TAGS,
   summary: 'Get all songs',
   description: 'Retrieves a paginated list of songs',
   request: {
@@ -94,7 +96,7 @@ export const getSongsRoute = createRoute({
 export const getSongRoute = createRoute({
   method: 'get',
   path: '/{id}',
-  tags: ['Songs'],
+  tags: TAGS,
   summary: 'Get song by ID',
   description: 'Retrieves a specific song by its ID',
   request: {
@@ -125,7 +127,7 @@ export const getSongRoute = createRoute({
 export const updateSongRoute = createRoute({
   method: 'put',
   path: '/{id}',
-  tags: ['Songs'],
+  tags: TAGS,
   summary: 'Update song',
   description: 'Updates an existing song with the provided information',
   request: {
@@ -179,7 +181,7 @@ export const updateSongRoute = createRoute({
 export const deleteSongRoute = createRoute({
   method: 'delete',
   path: '/{id}',
-  tags: ['Songs'],
+  tags: TAGS,
   summary: 'Delete song',
   description: 'Deletes an existing song',
   request: {

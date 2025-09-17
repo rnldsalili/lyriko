@@ -15,10 +15,12 @@ import {
 
 import { createRoute } from '@/api/lib/app';
 
+const TAGS = ['Albums'];
+
 export const createAlbumRoute = createRoute({
   method: 'post',
   path: '/',
-  tags: ['Albums'],
+  tags: TAGS,
   summary: 'Create a new album',
   description: 'Creates a new album with the provided information',
   request: {
@@ -63,7 +65,7 @@ export const createAlbumRoute = createRoute({
 export const getAlbumsRoute = createRoute({
   method: 'get',
   path: '/',
-  tags: ['Albums'],
+  tags: TAGS,
   summary: 'Get all albums',
   description: 'Retrieves a paginated list of albums',
   request: {
@@ -94,7 +96,7 @@ export const getAlbumsRoute = createRoute({
 export const getAlbumRoute = createRoute({
   method: 'get',
   path: '/{id}',
-  tags: ['Albums'],
+  tags: TAGS,
   summary: 'Get album by ID',
   description: 'Retrieves a specific album by its ID',
   request: {
@@ -125,7 +127,7 @@ export const getAlbumRoute = createRoute({
 export const updateAlbumRoute = createRoute({
   method: 'put',
   path: '/{id}',
-  tags: ['Albums'],
+  tags: TAGS,
   summary: 'Update album',
   description: 'Updates an existing album with the provided information',
   request: {
@@ -179,7 +181,7 @@ export const updateAlbumRoute = createRoute({
 export const deleteAlbumRoute = createRoute({
   method: 'delete',
   path: '/{id}',
-  tags: ['Albums'],
+  tags: TAGS,
   summary: 'Delete album',
   description: 'Deletes an existing album',
   request: {

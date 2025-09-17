@@ -26,9 +26,9 @@ function LoginForm() {
     setIsLoading(true);
     setError('');
 
-    // Get the redirect URL from search params, default to /home
+    // Get the redirect URL from search params, default to /
     const redirectTo = searchParams.get('redirect');
-    const callbackURL = redirectTo ? decodeURIComponent(redirectTo) : '/home';
+    const callbackURL = redirectTo ? decodeURIComponent(redirectTo) : '/';
 
     await signIn.email(
       {
