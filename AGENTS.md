@@ -226,6 +226,19 @@ import { Button } from '../../packages/ui/components/button';
 
 **Important**: Always use shadcn/ui CLI to add new components rather than creating them manually. This ensures proper component structure, theming, and TypeScript definitions.
 
+## Icon Guidelines
+
+**Always use lucide-react for all icons. Never create custom SVG icons.**
+
+```typescript
+// ✅ Correct
+import { Menu, LogOut, Github } from 'lucide-react';
+<Menu className="h-6 w-6" />
+
+// ❌ Avoid custom SVGs
+<svg><path d="..." /></svg>
+```
+
 ## shadcn/ui Component Usage
 
 When asked to use shadcn components, use the MCP server.
@@ -271,10 +284,12 @@ Use these semantic color tokens from the theme system:
 - **Layout**: `background`, `foreground`, `border`
 - **Content**: `card`, `card-foreground`, `popover`, `popover-foreground`
 - **Interactive**: `primary`, `primary-foreground`, `secondary`, `secondary-foreground`
-- **States**: `muted`, `muted-foreground`, `accent`, `accent-foreground`, `destructive`
+- **States**: `muted`, `muted-foreground`, `accent`, `accent-foreground`, `destructive`, `destructive-foreground`
 - **Forms**: `input`, `ring`
-- **Sidebar**: `sidebar`, `sidebar-foreground`, `sidebar-primary`, etc.
+- **Sidebar**: `sidebar`, `sidebar-foreground`, `sidebar-primary`, `sidebar-primary-foreground`, `sidebar-accent`, `sidebar-accent-foreground`, `sidebar-border`, `sidebar-ring`
 - **Charts**: `chart-1` through `chart-5`
+- **Typography**: Custom font families available via `font-sans` (Geist), `font-serif` (Lora), `font-mono` (Fira Code)
+- **Shadows**: `shadow-2xs`, `shadow-xs`, `shadow-sm`, `shadow`, `shadow-md`, `shadow-lg`, `shadow-xl`, `shadow-2xl`
 
 ### Dark Mode Support
 

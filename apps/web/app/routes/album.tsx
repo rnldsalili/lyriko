@@ -10,8 +10,8 @@ export function meta({ params }: Route.MetaArgs) {
 export default function Album({ params }: Route.ComponentProps) {
   return (
     <div>
-      <h1>Album Details</h1>
-      <p>Album ID: {params.id}</p>
+      <h1 className="text-3xl font-bold text-foreground mb-6">Album Details</h1>
+      <p className="text-muted-foreground text-lg">Album ID: {params.id}</p>
     </div>
   );
 }

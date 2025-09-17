@@ -1,4 +1,5 @@
 import { Sheet, SheetContent, SheetTrigger } from '@workspace/ui/base/sheet';
+import { LogIn, LogOut, Menu, UserPlus } from 'lucide-react';
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router';
 
@@ -8,7 +9,7 @@ import { signOut, useSession } from '@/web/lib/auth';
 export default function Header() {
   const location = useLocation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const { data: session, isLoading } = useSession();
+  const { data: session } = useSession();
 
   const navigation = [
     { name: 'Home', path: '/' },
@@ -97,21 +98,7 @@ export default function Header() {
                   aria-label="Open navigation menu"
                   className="inline-flex items-center justify-center p-2 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
                 >
-                  <svg
-                    aria-hidden="true"
-                    className="h-6 w-6"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M4 6h16M4 12h16M4 18h16"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                    />
-                  </svg>
+                  <Menu className="h-6 w-6" />
                 </button>
               </SheetTrigger>
               <SheetContent className="w-[320px] sm:w-[400px] p-0" side="right">
@@ -160,20 +147,7 @@ export default function Header() {
                           closeMobileMenu();
                         }}
                       >
-                        <svg
-                          className="mr-3 h-4 w-4 transition-transform group-hover:scale-110"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <path
-                            d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                          />
-                        </svg>
+                        <LogOut className="mr-3 h-4 w-4 transition-transform group-hover:scale-110" />
                         <span>Sign out</span>
                       </button>
                     ) : (
@@ -183,20 +157,7 @@ export default function Header() {
                           onClick={closeMobileMenu}
                           to="/login"
                         >
-                          <svg
-                            className="mr-3 h-4 w-4 transition-transform group-hover:scale-110"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <path
-                              d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                            />
-                          </svg>
+                          <LogIn className="mr-3 h-4 w-4 transition-transform group-hover:scale-110" />
                           <span>Sign in</span>
                         </Link>
                         <Link
@@ -204,20 +165,7 @@ export default function Header() {
                           onClick={closeMobileMenu}
                           to="/signup"
                         >
-                          <svg
-                            className="mr-3 h-4 w-4 transition-transform group-hover:scale-110"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <path
-                              d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                            />
-                          </svg>
+                          <UserPlus className="mr-3 h-4 w-4 transition-transform group-hover:scale-110" />
                           <span>Sign up</span>
                         </Link>
                       </div>

@@ -10,8 +10,10 @@ export function meta({ params }: Route.MetaArgs) {
 export default function Playlist({ params }: Route.ComponentProps) {
   return (
     <div>
-      <h1>Playlist Details</h1>
-      <p>Playlist ID: {params.id}</p>
+      <h1 className="text-3xl font-bold text-foreground mb-6">
+        Playlist Details
+      </h1>
+      <p className="text-muted-foreground text-lg">Playlist ID: {params.id}</p>
     </div>
   );
 }

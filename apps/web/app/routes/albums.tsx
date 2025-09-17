@@ -10,8 +10,8 @@ export function meta({}: Route.MetaArgs) {
 export default function Albums() {
   return (
     <div>
-      <h1>Albums</h1>
-      <p>Browse all albums page</p>
+      <h1 className="text-3xl font-bold text-foreground mb-6">Albums</h1>
+      <p className="text-muted-foreground text-lg">Browse all albums page</p>
     </div>
   );
 }

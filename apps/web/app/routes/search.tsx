@@ -10,8 +10,10 @@ export function meta({}: Route.MetaArgs) {
 export default function Search() {
   return (
     <div>
-      <h1>Search</h1>
-      <p>Search for artists, albums, songs, and playlists</p>
+      <h1 className="text-3xl font-bold text-foreground mb-6">Search</h1>
+      <p className="text-muted-foreground text-lg">
+        Search for artists, albums, songs, and playlists
+      </p>
     </div>
   );
 }
