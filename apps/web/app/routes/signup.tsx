@@ -69,90 +69,92 @@ function SignupForm() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background py-12 px-4 sm:px-6 lg:px-8">
-      <Card className="w-full max-w-md">
-        <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl text-center">
-            Create an account
-          </CardTitle>
-          <CardDescription className="text-center">
-            Enter your details below to create your account
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form className="space-y-4" onSubmit={handleSubmit}>
-            <div className="space-y-2">
-              <Label htmlFor="name">Full Name</Label>
-              <Input
-                required
-                id="name"
-                onChange={(e) => setName(e.target.value)}
-                placeholder="John Doe"
-                type="text"
-                value={name}
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                required
-                id="email"
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="john@example.com"
-                type="email"
-                value={email}
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
-              <Input
-                required
-                id="password"
-                minLength={6}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="Enter your password"
-                type="password"
-                value={password}
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="confirmPassword">Confirm Password</Label>
-              <Input
-                required
-                id="confirmPassword"
-                minLength={6}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                placeholder="Confirm your password"
-                type="password"
-                value={confirmPassword}
-              />
-            </div>
-
-            {error && (
-              <div className="text-red-600 text-sm text-center bg-red-50 p-2 rounded">
-                {error}
+    <div className="flex min-h-[calc(100vh-theme(spacing.32))] w-full items-center justify-center p-6">
+      <div className="w-full max-w-md">
+        <Card>
+          <CardHeader className="space-y-1">
+            <CardTitle className="text-2xl text-center">
+              Create your account
+            </CardTitle>
+            <CardDescription className="text-center">
+              Enter your details below to create your account
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <form className="space-y-4" onSubmit={handleSubmit}>
+              <div className="space-y-2">
+                <Label htmlFor="name">Full Name</Label>
+                <Input
+                  required
+                  id="name"
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder="John Doe"
+                  type="text"
+                  value={name}
+                />
               </div>
-            )}
 
-            <Button className="w-full" disabled={isLoading} type="submit">
-              {isLoading ? 'Creating account...' : 'Sign Up'}
-            </Button>
-          </form>
+              <div className="space-y-2">
+                <Label htmlFor="email">Email</Label>
+                <Input
+                  required
+                  id="email"
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="john@example.com"
+                  type="email"
+                  value={email}
+                />
+              </div>
 
-          <div className="mt-4 text-center text-sm">
-            Already have an account?{' '}
-            <Link
-              className="text-blue-600 hover:text-blue-500 font-medium"
-              to="/login"
-            >
-              Sign in
-            </Link>
-          </div>
-        </CardContent>
-      </Card>
+              <div className="space-y-2">
+                <Label htmlFor="password">Password</Label>
+                <Input
+                  required
+                  id="password"
+                  minLength={6}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="Enter your password"
+                  type="password"
+                  value={password}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="confirmPassword">Confirm Password</Label>
+                <Input
+                  required
+                  id="confirmPassword"
+                  minLength={6}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  placeholder="Confirm your password"
+                  type="password"
+                  value={confirmPassword}
+                />
+              </div>
+
+              {error && (
+                <div className="text-destructive text-sm text-center bg-destructive/10 p-2 rounded border border-destructive/20">
+                  {error}
+                </div>
+              )}
+
+              <Button className="w-full" disabled={isLoading} type="submit">
+                {isLoading ? 'Creating account...' : 'Sign Up'}
+              </Button>
+            </form>
+
+            <div className="mt-4 text-center text-sm">
+              Already have an account?{' '}
+              <Link
+                className="text-primary hover:text-primary/80 font-medium underline-offset-4 hover:underline"
+                to="/login"
+              >
+                Sign in
+              </Link>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 }

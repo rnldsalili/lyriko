@@ -6,11 +6,10 @@ import {
 } from '@react-router/dev/routes';
 
 export default [
-  index('routes/index.tsx'),
-  route('login', 'routes/login.tsx'),
-  route('signup', 'routes/signup.tsx'),
   layout('layouts/main-layout.tsx', [
-    route('home', 'routes/home.tsx'),
+    index('routes/home.tsx'),
+    route('login', 'routes/login.tsx'),
+    route('signup', 'routes/signup.tsx'),
     route('artists', 'routes/artists.tsx'),
     route('artists/:id', 'routes/artist.tsx'),
     route('albums', 'routes/albums.tsx'),
