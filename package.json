@@ -6,8 +6,8 @@
     "packages/*"
   ],
   "scripts": {
-    "dev": "bun run --filter=\"./apps/*\" dev",
     "cf-typegen": "bun run --filter=\"*\" cf-typegen",
+    "dev": "bun run cf-typegen && bun run --filter=\"./apps/*\" dev",
     "lint": "bun run --filter=\"*\" lint",
     "format": "bun run --filter=\"*\" format",
     "typecheck": "bun run --filter=\"*\" typecheck"

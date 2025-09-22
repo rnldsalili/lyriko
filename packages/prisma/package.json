@@ -8,9 +8,9 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@prisma/adapter-d1": "^6.16.1",
-    "@prisma/client": "^6.16.1",
-    "prisma": "^6.16.1"
+    "@prisma/adapter-d1": "^6.16.2",
+    "@prisma/client": "^6.16.2",
+    "prisma": "^6.16.2"
   },
   "devDependencies": {
     "@workspace/typescript-config": "workspace:*",
