@@ -1,5 +1,6 @@
 import { Music, User, Calendar, Plus, Edit, Trash2 } from 'lucide-react';
-import { Link } from 'react-router';
+import { Link, useRevalidator } from 'react-router';
+import { toast } from 'sonner';
 
 import apiClient from '@/web/lib/api-client';
 import { useSession } from '@/web/lib/auth';
@@ -28,30 +29,34 @@ export async function loader({ params }: Route.LoaderArgs) {
 export default function Genres({ loaderData }: Route.ComponentProps) {
   const { data } = loaderData;
   const { data: session } = useSession();
+  const revalidator = useRevalidator();
 
   const handleDelete = async (genreId: string, genreName: string) => {
-    if (
-      !confirm(
-        `Are you sure you want to delete "${genreName}"? This action cannot be undone.`,
-      )
-    ) {
-      return;
-    }
+    toast(`Delete "${genreName}"?`, {
+      description: 'This action cannot be undone.',
+      action: {
+        label: 'Delete',
+        onClick: async () => {
+          try {
+            const response = await apiClient.genres[':id'].$delete({
+              param: { id: genreId },
+            });
 
-    try {
-      const response = await apiClient.genres[':id'].$delete({
-        param: { id: genreId },
-      });
-
-      if (response.ok) {
-        // Reload the page to update the list
-        window.location.reload();
-      } else {
-        alert('Failed to delete genre. Please try again.');
-      }
-    } catch (error) {
-      alert('An error occurred while deleting the genre.');
-    }
+            if (response.ok) {
+              toast.success('Genre deleted successfully');
+              revalidator.revalidate();
+            } else {
+              const errorData = await response.json();
+              toast.error(
+                errorData.error || 'Failed to delete genre. Please try again.',
+              );
+            }
+          } catch (error) {
+            toast.error('An error occurred while deleting the genre.');
+          }
+        },
+      },
+    });
   };
 
   return (
@@ -92,7 +97,7 @@ export default function Genres({ loaderData }: Route.ComponentProps) {
               key={genre.id}
               style={{ animationDelay: `${index * 0.1}s` }}
             >
-              <Link className="block" to={`/genre/${genre.id}`}>
+              <Link className="block" to={`/genres/${genre.slug}`}>
                 <div className="relative bg-card/50 backdrop-blur-sm border border-border/50 rounded-2xl p-8 hover:bg-card hover:border-border hover:shadow-2xl hover:shadow-primary/5 transition-all duration-500 hover:-translate-y-2 overflow-hidden group">
                   {/* Gradient Background Effect */}
                   <div
@@ -162,7 +167,7 @@ export default function Genres({ loaderData }: Route.ComponentProps) {
                   <Link
                     className="p-2 bg-background/80 backdrop-blur-sm border border-border rounded-lg hover:bg-primary hover:text-primary-foreground transition-colors shadow-lg"
                     onClick={(e) => e.stopPropagation()}
-                    to={`/genres/${genre.id}/edit`}
+                    to={`/genres/${genre.slug}/edit`}
                   >
                     <Edit className="w-4 h-4" />
                   </Link>

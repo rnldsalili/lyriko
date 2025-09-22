@@ -1,9 +1,14 @@
+import { Toaster } from '@workspace/ui/base/sonner';
+import { useAtomValue } from 'jotai';
 import { Outlet } from 'react-router';
 
 import Footer from '@/web/components/footer';
 import Header from '@/web/components/header';
+import { themeAtom } from '@/web/store/theme';
 
 function MainLayoutContent() {
+  const theme = useAtomValue(themeAtom);
+
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <Header />
@@ -11,6 +16,7 @@ function MainLayoutContent() {
         <Outlet />
       </main>
       <Footer />
+      <Toaster theme={theme} />
     </div>
   );
 }

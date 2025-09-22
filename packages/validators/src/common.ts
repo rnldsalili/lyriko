@@ -84,6 +84,19 @@ export const emailSchema = z
     example: 'user@example.com',
   });
 
+export const datetimeSchema = z
+  .string({
+    message: 'Datetime is required and must be a string',
+  })
+  .regex(
+    /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d{3})?Z$/,
+    'Invalid datetime format, must be ISO 8601',
+  )
+  .describe('ISO 8601 datetime string')
+  .openapi({
+    example: '2023-01-01T00:00:00Z',
+  });
+
 // OpenAPI response schemas
 export const successResponseSchema = z.object({
   status: z.number().openapi({ example: 200 }),

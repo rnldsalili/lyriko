@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { extendZodWithOpenApi } from '@hono/zod-openapi';
-import { paginationResponseSchema } from './common';
+import { paginationResponseSchema, datetimeSchema } from './common';
 
 extendZodWithOpenApi(z);
 
@@ -160,14 +160,8 @@ export const artistResponseSchema = z
     isVerified: z.boolean().openapi({ example: false }),
     country: z.string().nullable().openapi({ example: 'United States' }),
     debutYear: z.number().nullable().openapi({ example: 2006 }),
-    createdAt: z
-      .string()
-      .datetime()
-      .openapi({ example: '2023-01-01T00:00:00Z' }),
-    updatedAt: z
-      .string()
-      .datetime()
-      .openapi({ example: '2023-01-01T00:00:00Z' }),
+    createdAt: datetimeSchema,
+    updatedAt: datetimeSchema,
   })
   .openapi('Artist');
 

@@ -11,17 +11,18 @@ const createClient = (...args: Parameters<typeof hc>) => {
   const [baseURL, options] = args;
 
   return hc<APIClientRouter>(baseURL, {
-    // fetch: (input: RequestInfo | URL, requestInit?: RequestInit) => {
-    //   return kyApi(`${input}`, {
-    //     method: requestInit?.method,
-    //     headers: {
-    //       ...requestInit?.headers,
-    //       'Content-Type': 'application/json',
-    //     },
-    //     credentials: 'include',
-    //     body: requestInit?.body,
-    //   });
-    // },
+    fetch: (input: RequestInfo | URL, requestInit?: RequestInit) => {
+      return fetch(`${input}`, {
+        method: requestInit?.method || 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          ...requestInit?.headers,
+        },
+        credentials: 'include',
+        body: requestInit?.body,
+        ...requestInit,
+      });
+    },
     ...options,
   });
 };
@@ -33,21 +34,5 @@ export type InferRequestType<T> = HonoInferRequestType<T>;
 export type InferResponseType<T> = HonoInferResponseType<T>;
 
 export type ClientResponse<T> = HonoClientResponse<T>;
-
-export type ApiError = {
-  error:
-    | string
-    | {
-        issues: {
-          code: string;
-          expected: string;
-          message: string;
-          path: string[];
-          received: string;
-        }[];
-        name: string;
-      };
-  status: number;
-};
 
 export default createClient;

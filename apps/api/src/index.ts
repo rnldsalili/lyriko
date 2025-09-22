@@ -26,11 +26,11 @@ const app = createRouter();
 // app.use('*', cors());
 
 app.use(
-  '/api/auth/*',
+  '/api/*',
   cors({
     origin: 'http://localhost:3010',
     allowHeaders: ['Content-Type', 'Authorization'],
-    allowMethods: ['POST', 'GET', 'OPTIONS'],
+    allowMethods: ['POST', 'PATCH', 'PUT', 'GET', 'OPTIONS'],
     exposeHeaders: ['Content-Length'],
     maxAge: 600,
     credentials: true,

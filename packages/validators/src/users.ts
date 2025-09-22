@@ -3,6 +3,7 @@ import { extendZodWithOpenApi } from '@hono/zod-openapi';
 import {
   emailSchema,
   paginationResponseSchema,
+  datetimeSchema,
 } from '@workspace/validators/common';
 
 extendZodWithOpenApi(z);
@@ -67,14 +68,8 @@ export const userResponseSchema = z
       .openapi({ example: 'Music lover and lyric enthusiast' }),
     isPublic: z.boolean().openapi({ example: true }),
     emailVerified: z.boolean().openapi({ example: false }),
-    createdAt: z
-      .string()
-      .datetime()
-      .openapi({ example: '2023-01-01T00:00:00Z' }),
-    updatedAt: z
-      .string()
-      .datetime()
-      .openapi({ example: '2023-01-01T00:00:00Z' }),
+    createdAt: datetimeSchema,
+    updatedAt: datetimeSchema,
   })
   .openapi('User');
 
