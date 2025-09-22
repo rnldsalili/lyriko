@@ -15,7 +15,7 @@ When adding new features or making changes:
 
 ## Stack
 
-- **Bun.js** package manager
+- **Node.js v22** + **pnpm** package manager
 - **Frontend**: React + React Router 7 → Cloudflare Workers
 - **API**: Hono.js + Prisma SQLite D1 → Cloudflare Workers
 - **Authentication**: Better Auth
@@ -93,32 +93,32 @@ model ExampleModel {
 1. **Create** (from `packages/prisma`):
 
    ```bash
-   bunx --bun wrangler d1 migrations create lyriko <name>
+   pnpm dlx wrangler d1 migrations create lyriko <name>
    ```
 
 2. **Generate SQL** (from `packages/prisma`):
 
    ```bash
    # Initial migration
-   bunx --bun prisma migrate diff --from-empty --to-schema-datamodel ./prisma/schema.prisma --script --output migrations/<file>.sql
+   pnpm dlx prisma migrate diff --from-empty --to-schema-datamodel ./prisma/schema.prisma --script --output migrations/<file>.sql
 
    # Schema changes
-   bunx --bun prisma migrate diff --from-local-d1 --to-schema-datamodel ./prisma/schema.prisma --script --output migrations/<file>.sql
+   pnpm dlx prisma migrate diff --from-local-d1 --to-schema-datamodel ./prisma/schema.prisma --script --output migrations/<file>.sql
    ```
 
 3. **Apply** (local must be from `apps/api`):
 
    ```bash
    # Local (from apps/api only)
-   cd apps/api && bunx --bun wrangler d1 migrations apply lyriko --local
+   cd apps/api && pnpm dlx wrangler d1 migrations apply lyriko --local
 
    # Remote (from either directory)
-   bunx --bun wrangler d1 migrations apply lyriko --remote
+   pnpm dlx wrangler d1 migrations apply lyriko --remote
    ```
 
 4. **Generate client** (from `packages/prisma`):
    ```bash
-   bunx --bun prisma generate
+   pnpm dlx prisma generate
    ```
 
 ## Error Handling
@@ -210,7 +210,7 @@ To add shadcn/ui components (e.g., Button, Card, etc.):
 
 ```bash
 cd packages/ui
-bunx --bun shadcn@latest add button
+pnpm dlx shadcn@latest add button
 ```
 
 ### Usage

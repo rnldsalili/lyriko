@@ -1,19 +1,15 @@
 {
   "name": "lyriko",
   "private": true,
-  "workspaces": [
-    "apps/*",
-    "packages/*"
-  ],
   "scripts": {
-    "cf-typegen": "bun run --filter=\"*\" cf-typegen",
-    "dev": "bun run cf-typegen && bun run --filter=\"./apps/*\" dev",
-    "lint": "bun run --filter=\"*\" lint",
-    "format": "bun run --filter=\"*\" format",
-    "typecheck": "bun run --filter=\"*\" typecheck"
+    "cf-typegen": "npm run -r --parallel cf-typegen",
+    "dev": "pnpm run -r --parallel --aggregate-output dev",
+    "lint": "pnpm run -r --parallel lint",
+    "format": "pnpm run -r --parallel format",
+    "typecheck": "pnpm run -r --paralle typecheck"
   },
   "devDependencies": {
-    "@types/bun": "^1.2.22",
+    "@types/node": "^22.18.0",
     "eslint": "^9.36.0",
     "prettier": "^3.6.2",
     "typescript": "^5.9.2",

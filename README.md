@@ -42,22 +42,22 @@ lyriko/
 ### Installation
 
 ```bash
-bun install
+pnpm install
 ```
 
 ### Available Scripts
 
 ```bash
 # Development
-bun run dev          # Start all apps in development mode
+pnpm run dev          # Start all apps in development mode
 
 # Code Quality
-bun run lint         # Lint all workspaces
-bun run format       # Format all workspaces
+pnpm run lint         # Lint all workspaces
+pnpm run format       # Format all workspaces
 
 # Individual Apps
-cd apps/web && bun run dev      # Start web app only
-cd apps/api && bun run dev      # Start API only
+cd apps/web && pnpm run dev      # Start web app only
+cd apps/api && pnpm run dev      # Start API only
 ```
 
 ### Environment Setup
@@ -70,17 +70,17 @@ Both applications are configured for Cloudflare Workers deployment. Make sure yo
 
 ### Database
 
-bunx --bun wrangler d1 migrations create lyriko create_user_table
-bunx --bun prisma migrate diff --from-empty --to-schema-datamodel ./prisma/schema.prisma --script --output migrations/0001_create_user_table.sql
+pnpm dlx wrangler d1 migrations create lyriko create_user_table
+pnpm dlx prisma migrate diff --from-empty --to-schema-datamodel ./prisma/schema.prisma --script --output migrations/0001_create_user_table.sql
 
-bunx --bun wrangler d1 migrations apply lyriko --local
-bunx --bun wrangler d1 migrations apply lyriko --remote
-bunx --bun prisma generate
+pnpm dlx wrangler d1 migrations apply lyriko --local
+pnpm dlx wrangler d1 migrations apply lyriko --remote
+pnpm dlx prisma generate
 
 ### UI
 
 cd packages/ui
-bunx --bun shadcn@latest add button
+pnpm dlx shadcn@latest add button
 
 ## 🚢 Deployment
 
@@ -88,10 +88,10 @@ Both apps are optimized for Cloudflare Workers:
 
 ```bash
 # Deploy web app
-cd apps/web && bun run deploy
+cd apps/web && pnpm run deploy
 
 # Deploy API
-cd apps/api && bun run deploy
+cd apps/api && pnpm run deploy
 ```
 
 ## 📋 Initial Setup Commands
@@ -100,10 +100,10 @@ The project was bootstrapped using:
 
 ```bash
 # API setup
-bun create hono@latest
+pnpm create hono@latest
 
 # Web app setup
-bun create cloudflare@latest -- my-react-router-app --framework=react-router
+pnpm create cloudflare@latest -- my-react-router-app --framework=react-router
 ```
 
 ## 🤖 AI Agents Configuration

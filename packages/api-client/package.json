@@ -4,10 +4,10 @@
   "version": "1.0.0",
   "main": "./dist/index.js",
   "scripts": {
-    "dev": "rm -rf ./dist && bunx --bun tsc --watch",
-    "build": "bunx --bun tsc",
+    "dev": "rm -rf ./dist && tsc --watch",
+    "build": "tsc",
     "lint": "eslint .",
-    "typecheck": "bunx --bun tsc --noEmit"
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@workspace/api": "workspace:*",

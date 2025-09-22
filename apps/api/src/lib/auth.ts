@@ -32,7 +32,10 @@ export function createAuth(c: Context<Env>) {
 // For CLI usage only - conditionally export based on environment
 export const auth = (() => {
   // Check if we're in a Node.js environment (not Cloudflare Workers)
-  if (typeof globalThis.Bun !== 'undefined') {
+  if (
+    typeof globalThis.process !== 'undefined' &&
+    globalThis.process.versions?.node
+  ) {
     // We're in Node.js environment (CLI)
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     const { PrismaClient } = require('@workspace/prisma');
