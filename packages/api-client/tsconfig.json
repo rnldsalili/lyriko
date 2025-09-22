@@ -5,11 +5,8 @@
     "lib": ["ESNext", "DOM", "DOM.Iterable"],
     "module": "ESNext",
     "rootDir": "src",
-    "typeRoots": [
-      "../../node_modules/@types",
-      "../../node_modules/@cloudflare"
-    ],
-    "types": ["workers-types/2023-07-01", "bun"],
+    "typeRoots": ["./node_modules/@types", "./node_modules/@cloudflare"],
+    "types": ["workers-types/2023-07-01"],
     "declaration": true,
     "declarationMap": true,
     "outDir": "dist",
@@ -20,5 +17,5 @@
   "watchOptions": {
     "excludeDirectories": ["**/node_modules", "**/app/web"]
   },
-  "include": ["src", "../../apps/api/worker-configuration.d.ts"]
+  "include": ["src/**/*", "worker-configuration.d.ts"]
 }

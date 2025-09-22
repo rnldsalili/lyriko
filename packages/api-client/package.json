@@ -4,8 +4,8 @@
   "version": "1.0.0",
   "main": "./dist/index.js",
   "scripts": {
-    "dev": "rm -rf ./dist && tsc --watch",
-    "build": "tsc",
+    "dev": "rm worker-configuration.d.ts && cp ../../apps/api/worker-configuration.d.ts . && rm -rf ./dist && tsc --watch",
+    "build": "rm worker-configuration.d.ts && cp ../../apps/api/worker-configuration.d.ts . && tsc",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit"
   },
