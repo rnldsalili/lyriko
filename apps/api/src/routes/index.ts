@@ -1,3 +1,4 @@
+import { createRouter } from '@/api/lib/app';
 import albums from '@/api/routes/albums/albums.index';
 import artists from '@/api/routes/artists/artists.index';
 import genres from '@/api/routes/genres/genres.index';
@@ -10,11 +11,16 @@ import type { Router } from '@/api/types/router';
 const API_PREFIX = '/api';
 
 export function registerRoutes(app: Router) {
-  app.route(API_PREFIX, users);
-  app.route(API_PREFIX, genres);
-  app.route(API_PREFIX, artists);
-  app.route(API_PREFIX, albums);
-  app.route(API_PREFIX, songs);
-  app.route(API_PREFIX, playlists);
-  return app;
+  return app
+    .route(API_PREFIX, users)
+    .route(API_PREFIX, genres)
+    .route(API_PREFIX, artists)
+    .route(API_PREFIX, albums)
+    .route(API_PREFIX, songs)
+    .route(API_PREFIX, playlists);
 }
+
+// Stand alone router type used for api client
+export const router = registerRoutes(createRouter());
+
+export type APIClientRouter = typeof router;

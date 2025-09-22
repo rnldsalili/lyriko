@@ -53,6 +53,7 @@ import { UserService } from '../services/user.js';
 
 ## Packages
 
+- `@workspace/api-client` - Type-safe API client
 - `@workspace/constants` - Shared enums/constants
 - `@workspace/eslint-config` - ESLint rules
 - `@workspace/typescript-config` - TS configs

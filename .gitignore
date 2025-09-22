@@ -6,7 +6,7 @@ node_modules
 
 # Production builds
 /build
-/dist
+dist/
 /.next/
 /out/
 build/
