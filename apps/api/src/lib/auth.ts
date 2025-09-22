@@ -1,6 +1,6 @@
+import { PrismaClient } from '@workspace/prisma';
 import { betterAuth } from 'better-auth';
 import { prismaAdapter } from 'better-auth/adapters/prisma';
-import { PrismaClient } from '@workspace/prisma';
 
 import { initializePrisma } from '@/api/lib/db';
 

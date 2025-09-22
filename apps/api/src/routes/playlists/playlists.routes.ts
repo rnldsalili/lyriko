@@ -18,6 +18,7 @@ import {
 } from '@workspace/validators/playlists';
 
 import { createRoute } from '@/api/lib/app';
+import { requireAuth } from '@/api/middleware/require-auth';
 
 const TAGS = ['Playlists'];
 
@@ -27,6 +28,7 @@ export const createPlaylistRoute = createRoute({
   tags: TAGS,
   summary: 'Create a new playlist',
   description: 'Creates a new playlist with the provided information',
+  middleware: [requireAuth] as const,
   request: {
     body: {
       content: {
@@ -54,6 +56,14 @@ export const createPlaylistRoute = createRoute({
         },
       },
       description: 'Invalid request data',
+    },
+    401: {
+      content: {
+        'application/json': {
+          schema: errorResponseSchema,
+        },
+      },
+      description: 'Authentication required',
     },
   },
 });
@@ -126,6 +136,7 @@ export const updatePlaylistRoute = createRoute({
   tags: TAGS,
   summary: 'Update playlist',
   description: 'Updates an existing playlist with the provided information',
+  middleware: [requireAuth] as const,
   request: {
     params: commonGetOneSchema,
     body: {
@@ -172,6 +183,7 @@ export const deletePlaylistRoute = createRoute({
   tags: TAGS,
   summary: 'Delete playlist',
   description: 'Deletes an existing playlist',
+  middleware: [requireAuth] as const,
   request: {
     params: commonGetOneSchema,
   },
@@ -203,6 +215,7 @@ export const addSongToPlaylistRoute = createRoute({
   tags: TAGS,
   summary: 'Add song to playlist',
   description: 'Adds a song to an existing playlist',
+  middleware: [requireAuth] as const,
   request: {
     params: commonGetOneSchema,
     body: {
@@ -240,6 +253,14 @@ export const addSongToPlaylistRoute = createRoute({
       },
       description: 'Playlist or song not found',
     },
+    401: {
+      content: {
+        'application/json': {
+          schema: errorResponseSchema,
+        },
+      },
+      description: 'Authentication required',
+    },
     409: {
       content: {
         'application/json': {
@@ -257,6 +278,7 @@ export const removeSongFromPlaylistRoute = createRoute({
   tags: TAGS,
   summary: 'Remove song from playlist',
   description: 'Removes a song from an existing playlist',
+  middleware: [requireAuth] as const,
   request: {
     params: removeSongFromPlaylistParamsSchema,
   },
@@ -270,6 +292,14 @@ export const removeSongFromPlaylistRoute = createRoute({
         },
       },
       description: 'Song removed from playlist successfully',
+    },
+    401: {
+      content: {
+        'application/json': {
+          schema: errorResponseSchema,
+        },
+      },
+      description: 'Authentication required',
     },
     404: {
       content: {

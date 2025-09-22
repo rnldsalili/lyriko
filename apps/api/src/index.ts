@@ -15,8 +15,8 @@ export type Env = {
   Bindings: CloudflareBindings;
   Variables: {
     prisma: PrismaClient;
-    user: User | null;
-    session: Session | null;
+    user: User;
+    session: Session;
   };
 };
 

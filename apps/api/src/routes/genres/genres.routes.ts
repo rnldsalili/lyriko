@@ -14,6 +14,7 @@ import {
 } from '@workspace/validators/genres';
 
 import { createRoute } from '@/api/lib/app';
+import { requireAuth } from '@/api/middleware/require-auth';
 
 const TAGS = ['Genres'];
 
@@ -23,6 +24,7 @@ export const createGenreRoute = createRoute({
   tags: TAGS,
   summary: 'Create a new genre',
   description: 'Creates a new genre with the provided information',
+  middleware: [requireAuth] as const,
   request: {
     body: {
       content: {
@@ -50,6 +52,14 @@ export const createGenreRoute = createRoute({
         },
       },
       description: 'Invalid request data',
+    },
+    401: {
+      content: {
+        'application/json': {
+          schema: errorResponseSchema,
+        },
+      },
+      description: 'Authentication required',
     },
     409: {
       content: {
@@ -130,6 +140,7 @@ export const updateGenreRoute = createRoute({
   tags: TAGS,
   summary: 'Update genre',
   description: 'Updates an existing genre with the provided information',
+  middleware: [requireAuth] as const,
   request: {
     params: commonGetOneSchema,
     body: {
@@ -159,6 +170,14 @@ export const updateGenreRoute = createRoute({
       },
       description: 'Invalid request data',
     },
+    401: {
+      content: {
+        'application/json': {
+          schema: errorResponseSchema,
+        },
+      },
+      description: 'Authentication required',
+    },
     404: {
       content: {
         'application/json': {
@@ -184,6 +203,7 @@ export const deleteGenreRoute = createRoute({
   tags: TAGS,
   summary: 'Delete genre',
   description: 'Deletes an existing genre',
+  middleware: [requireAuth] as const,
   request: {
     params: commonGetOneSchema,
   },
@@ -198,14 +218,6 @@ export const deleteGenreRoute = createRoute({
       },
       description: 'Genre deleted successfully',
     },
-    404: {
-      content: {
-        'application/json': {
-          schema: notFoundResponseSchema,
-        },
-      },
-      description: 'Genre not found',
-    },
     400: {
       content: {
         'application/json': {
@@ -213,6 +225,22 @@ export const deleteGenreRoute = createRoute({
         },
       },
       description: 'Cannot delete genre with associated songs or albums',
+    },
+    401: {
+      content: {
+        'application/json': {
+          schema: errorResponseSchema,
+        },
+      },
+      description: 'Authentication required',
+    },
+    404: {
+      content: {
+        'application/json': {
+          schema: notFoundResponseSchema,
+        },
+      },
+      description: 'Genre not found',
     },
   },
 });

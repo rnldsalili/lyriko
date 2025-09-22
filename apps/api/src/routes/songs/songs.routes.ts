@@ -14,6 +14,7 @@ import {
 } from '@workspace/validators/songs';
 
 import { createRoute } from '@/api/lib/app';
+import { requireAuth } from '@/api/middleware/require-auth';
 
 const TAGS = ['Songs'];
 
@@ -23,6 +24,7 @@ export const createSongRoute = createRoute({
   tags: TAGS,
   summary: 'Create a new song',
   description: 'Creates a new song with the provided information',
+  middleware: [requireAuth] as const,
   request: {
     body: {
       content: {
@@ -50,6 +52,14 @@ export const createSongRoute = createRoute({
         },
       },
       description: 'Invalid request data',
+    },
+    401: {
+      content: {
+        'application/json': {
+          schema: errorResponseSchema,
+        },
+      },
+      description: 'Authentication required',
     },
     409: {
       content: {
@@ -130,6 +140,7 @@ export const updateSongRoute = createRoute({
   tags: TAGS,
   summary: 'Update song',
   description: 'Updates an existing song with the provided information',
+  middleware: [requireAuth] as const,
   request: {
     params: commonGetOneSchema,
     body: {
@@ -159,6 +170,14 @@ export const updateSongRoute = createRoute({
       },
       description: 'Invalid request data',
     },
+    401: {
+      content: {
+        'application/json': {
+          schema: errorResponseSchema,
+        },
+      },
+      description: 'Authentication required',
+    },
     404: {
       content: {
         'application/json': {
@@ -184,6 +203,7 @@ export const deleteSongRoute = createRoute({
   tags: TAGS,
   summary: 'Delete song',
   description: 'Deletes an existing song',
+  middleware: [requireAuth] as const,
   request: {
     params: commonGetOneSchema,
   },

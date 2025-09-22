@@ -14,6 +14,7 @@ import {
 } from '@workspace/validators/common';
 
 import { createRoute } from '@/api/lib/app';
+import { requireAuth } from '@/api/middleware/require-auth';
 
 const TAGS = ['Artists'];
 
@@ -23,6 +24,7 @@ export const createArtistRoute = createRoute({
   tags: TAGS,
   summary: 'Create a new artist',
   description: 'Creates a new artist with the provided information',
+  middleware: [requireAuth] as const,
   request: {
     body: {
       content: {
@@ -50,6 +52,14 @@ export const createArtistRoute = createRoute({
         },
       },
       description: 'Invalid request data',
+    },
+    401: {
+      content: {
+        'application/json': {
+          schema: errorResponseSchema,
+        },
+      },
+      description: 'Authentication required',
     },
     409: {
       content: {
@@ -130,6 +140,7 @@ export const updateArtistRoute = createRoute({
   tags: TAGS,
   summary: 'Update artist',
   description: 'Updates an existing artist with the provided information',
+  middleware: [requireAuth] as const,
   request: {
     params: commonGetOneSchema,
     body: {
@@ -159,6 +170,14 @@ export const updateArtistRoute = createRoute({
       },
       description: 'Invalid request data',
     },
+    401: {
+      content: {
+        'application/json': {
+          schema: errorResponseSchema,
+        },
+      },
+      description: 'Authentication required',
+    },
     404: {
       content: {
         'application/json': {
@@ -184,6 +203,7 @@ export const deleteArtistRoute = createRoute({
   tags: TAGS,
   summary: 'Delete artist',
   description: 'Deletes an existing artist',
+  middleware: [requireAuth] as const,
   request: {
     params: commonGetOneSchema,
   },
@@ -198,14 +218,6 @@ export const deleteArtistRoute = createRoute({
       },
       description: 'Artist deleted successfully',
     },
-    404: {
-      content: {
-        'application/json': {
-          schema: notFoundResponseSchema,
-        },
-      },
-      description: 'Artist not found',
-    },
     400: {
       content: {
         'application/json': {
@@ -213,6 +225,22 @@ export const deleteArtistRoute = createRoute({
         },
       },
       description: 'Cannot delete artist with associated songs or albums',
+    },
+    401: {
+      content: {
+        'application/json': {
+          schema: errorResponseSchema,
+        },
+      },
+      description: 'Authentication required',
+    },
+    404: {
+      content: {
+        'application/json': {
+          schema: notFoundResponseSchema,
+        },
+      },
+      description: 'Artist not found',
     },
   },
 });

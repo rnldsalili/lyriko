@@ -14,6 +14,7 @@ import {
 } from '@workspace/validators/common';
 
 import { createRoute } from '@/api/lib/app';
+import { requireAuth } from '@/api/middleware/require-auth';
 
 const TAGS = ['Albums'];
 
@@ -23,6 +24,7 @@ export const createAlbumRoute = createRoute({
   tags: TAGS,
   summary: 'Create a new album',
   description: 'Creates a new album with the provided information',
+  middleware: [requireAuth] as const,
   request: {
     body: {
       content: {
@@ -50,6 +52,14 @@ export const createAlbumRoute = createRoute({
         },
       },
       description: 'Invalid request data',
+    },
+    401: {
+      content: {
+        'application/json': {
+          schema: errorResponseSchema,
+        },
+      },
+      description: 'Authentication required',
     },
     409: {
       content: {
@@ -130,6 +140,7 @@ export const updateAlbumRoute = createRoute({
   tags: TAGS,
   summary: 'Update album',
   description: 'Updates an existing album with the provided information',
+  middleware: [requireAuth] as const,
   request: {
     params: commonGetOneSchema,
     body: {
@@ -159,6 +170,14 @@ export const updateAlbumRoute = createRoute({
       },
       description: 'Invalid request data',
     },
+    401: {
+      content: {
+        'application/json': {
+          schema: errorResponseSchema,
+        },
+      },
+      description: 'Authentication required',
+    },
     404: {
       content: {
         'application/json': {
@@ -184,6 +203,7 @@ export const deleteAlbumRoute = createRoute({
   tags: TAGS,
   summary: 'Delete album',
   description: 'Deletes an existing album',
+  middleware: [requireAuth] as const,
   request: {
     params: commonGetOneSchema,
   },
@@ -198,14 +218,6 @@ export const deleteAlbumRoute = createRoute({
       },
       description: 'Album deleted successfully',
     },
-    404: {
-      content: {
-        'application/json': {
-          schema: notFoundResponseSchema,
-        },
-      },
-      description: 'Album not found',
-    },
     400: {
       content: {
         'application/json': {
@@ -213,6 +225,22 @@ export const deleteAlbumRoute = createRoute({
         },
       },
       description: 'Cannot delete album with associated songs',
+    },
+    401: {
+      content: {
+        'application/json': {
+          schema: errorResponseSchema,
+        },
+      },
+      description: 'Authentication required',
+    },
+    404: {
+      content: {
+        'application/json': {
+          schema: notFoundResponseSchema,
+        },
+      },
+      description: 'Album not found',
     },
   },
 });

@@ -1,6 +1,7 @@
 import { StatusCode } from '@workspace/constants/status-code';
 
 import { handlePrismaError } from '@/api/lib/prisma-errors';
+import { generateSlug } from '@/api/lib/utils';
 
 import type { AppRouteHandler } from '@/api/lib/app';
 import type {
@@ -40,6 +41,13 @@ export const getGenres: AppRouteHandler<GetGenres> = async (c) => {
           color: true,
           createdAt: true,
           updatedAt: true,
+          creator: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+            },
+          },
         },
         orderBy: {
           name: 'asc',
@@ -91,6 +99,13 @@ export const getGenre: AppRouteHandler<GetGenre> = async (c) => {
         color: true,
         createdAt: true,
         updatedAt: true,
+        creator: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
       },
     });
 
@@ -127,20 +142,18 @@ export const getGenre: AppRouteHandler<GetGenre> = async (c) => {
 export const createGenre: AppRouteHandler<CreateGenre> = async (c) => {
   const prisma = c.get('prisma');
   const genreData = c.req.valid('json');
+  const user = c.get('user');
 
   try {
     // Generate slug from name
-    const slug = genreData.name
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, '-')
-      .replace(/^-+|-+$/g, '');
+    const slug = generateSlug(genreData.name);
 
     const genre = await prisma.genre.create({
       data: {
         ...genreData,
         slug,
-        createdBy: 'system', // Since no authentication is required
-        updatedBy: 'system',
+        createdBy: user.id,
+        updatedBy: user.id,
       },
       select: {
         id: true,
@@ -150,6 +163,13 @@ export const createGenre: AppRouteHandler<CreateGenre> = async (c) => {
         color: true,
         createdAt: true,
         updatedAt: true,
+        creator: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
       },
     });
 
@@ -181,6 +201,7 @@ export const updateGenre: AppRouteHandler<UpdateGenre> = async (c) => {
   const prisma = c.get('prisma');
   const { id } = c.req.valid('param');
   const updateData = c.req.valid('json');
+  const user = c.get('user');
 
   try {
     // Check if genre exists
@@ -199,19 +220,14 @@ export const updateGenre: AppRouteHandler<UpdateGenre> = async (c) => {
     }
 
     // Generate new slug if name is being updated
-    const slug = updateData.name
-      ? updateData.name
-          .toLowerCase()
-          .replace(/[^a-z0-9]+/g, '-')
-          .replace(/^-+|-+$/g, '')
-      : undefined;
+    const slug = updateData.name ? generateSlug(updateData.name) : undefined;
 
     const genre = await prisma.genre.update({
       where: { id },
       data: {
         ...updateData,
         ...(slug && { slug }),
-        updatedBy: 'system',
+        updatedBy: user.id,
       },
       select: {
         id: true,
@@ -221,6 +237,13 @@ export const updateGenre: AppRouteHandler<UpdateGenre> = async (c) => {
         color: true,
         createdAt: true,
         updatedAt: true,
+        creator: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
       },
     });
 

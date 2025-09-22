@@ -87,10 +87,12 @@ function SignupForm() {
                 <Input
                   required
                   id="name"
-                  onChange={(e) => setName(e.target.value)}
                   placeholder="John Doe"
                   type="text"
                   value={name}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                    setName(e.target.value)
+                  }
                 />
               </div>
 
@@ -99,10 +101,12 @@ function SignupForm() {
                 <Input
                   required
                   id="email"
-                  onChange={(e) => setEmail(e.target.value)}
                   placeholder="john@example.com"
                   type="email"
                   value={email}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                    setEmail(e.target.value)
+                  }
                 />
               </div>
 
@@ -112,10 +116,12 @@ function SignupForm() {
                   required
                   id="password"
                   minLength={6}
-                  onChange={(e) => setPassword(e.target.value)}
                   placeholder="Enter your password"
                   type="password"
                   value={password}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                    setPassword(e.target.value)
+                  }
                 />
               </div>
 
@@ -125,10 +131,12 @@ function SignupForm() {
                   required
                   id="confirmPassword"
                   minLength={6}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
                   placeholder="Confirm your password"
                   type="password"
                   value={confirmPassword}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                    setConfirmPassword(e.target.value)
+                  }
                 />
               </div>
 

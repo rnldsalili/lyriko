@@ -73,10 +73,12 @@ function LoginForm() {
                 <Input
                   required
                   id="email"
-                  onChange={(e) => setEmail(e.target.value)}
                   placeholder="john@example.com"
                   type="email"
                   value={email}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                    setEmail(e.target.value)
+                  }
                 />
               </div>
 
@@ -93,10 +95,12 @@ function LoginForm() {
                 <Input
                   required
                   id="password"
-                  onChange={(e) => setPassword(e.target.value)}
                   placeholder="Enter your password"
                   type="password"
                   value={password}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                    setPassword(e.target.value)
+                  }
                 />
               </div>
 

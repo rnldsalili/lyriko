@@ -1,3 +1,5 @@
+import apiClient from '@/web/lib/api-client';
+
 import type { Route } from './+types/genre';
 
 export function meta({ params }: Route.MetaArgs) {

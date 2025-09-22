@@ -22,6 +22,21 @@ export const config = [
       import: importPlugin,
       '@stylistic': stylistic,
     },
+    settings: {
+      'import/resolver': {
+        node: {
+          extensions: ['.js', '.jsx', '.ts', '.tsx'],
+        },
+        typescript: {
+          alwaysTryTypes: true,
+          project: [
+            './tsconfig.json',
+            './packages/*/tsconfig.json',
+            './apps/*/tsconfig.json',
+          ],
+        },
+      },
+    },
     rules: {
       'comma-dangle': ['error', 'always-multiline'],
       'no-empty-pattern': 'off',
