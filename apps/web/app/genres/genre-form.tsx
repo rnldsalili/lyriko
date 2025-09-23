@@ -10,7 +10,7 @@ import {
 } from '@workspace/ui/base/form';
 import { Input } from '@workspace/ui/base/input';
 import { Textarea } from '@workspace/ui/base/textarea';
-import { Palette } from 'lucide-react';
+import { ColorPicker } from '@workspace/ui/components/color-picker';
 import { useForm } from 'react-hook-form';
 import { Link } from 'react-router';
 import { z } from 'zod';
@@ -106,21 +106,10 @@ export function GenreForm({
               <FormItem>
                 <FormLabel>Color</FormLabel>
                 <FormControl>
-                  <div className="flex items-center gap-3">
-                    <div className="relative">
-                      <input
-                        {...field}
-                        type="color"
-                        value={field.value || '#6366f1'}
-                      />
-                      <Palette className="absolute inset-0 w-4 h-4 m-auto pointer-events-none text-white mix-blend-difference" />
-                    </div>
-                    <Input
-                      {...field}
-                      className="flex-1 font-mono text-sm"
-                      placeholder="#6366f1"
-                    />
-                  </div>
+                  <ColorPicker
+                    onChange={field.onChange}
+                    value={field.value || '#6366f1'}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
