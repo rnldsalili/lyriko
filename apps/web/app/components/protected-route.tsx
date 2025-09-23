@@ -19,7 +19,7 @@ export function ProtectedRoute({ children }: ProtectedRouteProps) {
       const redirectTo = encodeURIComponent(
         location.pathname + location.search,
       );
-      navigate(`/?redirect=${redirectTo}`, { replace: true });
+      navigate(`/login?redirect=${redirectTo}`, { replace: true });
     }
   }, [session, isPending, navigate, location]);
 

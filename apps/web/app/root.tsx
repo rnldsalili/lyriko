@@ -1,3 +1,4 @@
+import { LoadingSpinner } from '@workspace/ui/components/spinner';
 import {
   isRouteErrorResponse,
   Links,
@@ -5,6 +6,7 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
+  useNavigation,
 } from 'react-router';
 
 import type { Route } from './+types/root';
@@ -33,7 +35,7 @@ export const links: Route.LinksFunction = () => [
 
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
-    <html className="dark" lang="en">
+    <html className="light" lang="en">
       <head>
         <meta charSet="utf-8" />
         <meta content="width=device-width, initial-scale=1" name="viewport" />
@@ -42,12 +44,17 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <script
           dangerouslySetInnerHTML={{
             __html: `
-              try {
-                const theme = localStorage.getItem('theme') || 'system';
-                const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-                const actualTheme = theme === 'system' ? systemTheme : theme;
-                document.documentElement.className = actualTheme;
-              } catch (e) {}
+              (function() {
+                try {
+                  const theme = localStorage.getItem('theme') || 'system';
+                  const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+                  const actualTheme = theme === 'system' ? systemTheme : theme;
+                  document.documentElement.className = actualTheme;
+                } catch (e) {
+                  // Fallback to light theme if there's an error
+                  document.documentElement.className = 'light';
+                }
+              })();
             `,
           }}
         />
@@ -62,7 +69,17 @@ export function Layout({ children }: { children: React.ReactNode }) {
 }
 
 export default function App() {
-  return <Outlet />;
+  const navigation = useNavigation();
+  const isNavigating = Boolean(navigation.location);
+
+  return (
+    <>
+      {isNavigating && (
+        <LoadingSpinner className="fixed inset-0 z-50 bg-background/30" />
+      )}
+      <Outlet />
+    </>
+  );
 }
 
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {

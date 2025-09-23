@@ -1,4 +1,4 @@
-import { Toaster as Sonner, ToasterProps } from 'sonner';
+import { Toaster as Sonner, type ToasterProps } from 'sonner';
 
 interface ToasterCustomProps extends ToasterProps {
   theme?: 'light' | 'dark' | 'system';

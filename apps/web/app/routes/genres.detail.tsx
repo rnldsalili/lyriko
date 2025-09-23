@@ -1,10 +1,11 @@
-import { Music, User, Calendar, Edit, Trash2, ArrowLeft } from 'lucide-react';
+import { Music, User, Calendar, Edit, Trash2 } from 'lucide-react';
 import { Link, useNavigate } from 'react-router';
 
+import { BackNavigation } from '@/web/components/back-navigation';
 import apiClient from '@/web/lib/api-client';
 import { useSession } from '@/web/lib/auth';
 
-import type { Route } from './+types/genre';
+import type { Route } from './+types/genres.detail';
 export function meta({ params }: Route.MetaArgs) {
   return [
     { title: `${params.slug} - Lyriko` },
@@ -78,16 +79,7 @@ export default function Genre({ loaderData }: Route.ComponentProps) {
 
   return (
     <div className="container mx-auto px-4 py-6">
-      {/* Back Navigation */}
-      <div className="mb-6">
-        <Link
-          className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
-          to="/genres"
-        >
-          <ArrowLeft className="w-4 h-4" />
-          Back to Genres
-        </Link>
-      </div>
+      <BackNavigation label="Back to Genres" to="/genres" />
 
       {/* Header Section */}
       <div className="relative bg-card border border-border rounded-xl p-6 mb-6 overflow-hidden">
