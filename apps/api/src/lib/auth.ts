@@ -1,6 +1,7 @@
 import { PrismaClient } from '@workspace/prisma';
 import { betterAuth } from 'better-auth';
 import { prismaAdapter } from 'better-auth/adapters/prisma';
+import { openAPI } from 'better-auth/plugins';
 
 import { initializePrisma } from '@/api/lib/db';
 
@@ -16,6 +17,12 @@ const authConfig = {
   emailAndPassword: {
     enabled: true,
   },
+  plugins: [
+    openAPI({
+      path: '/reference',
+      disableDefaultReference: true, // Disable since we're using merged docs
+    }),
+  ],
   // Add other auth configuration here
 } satisfies BetterAuthOptions;
 

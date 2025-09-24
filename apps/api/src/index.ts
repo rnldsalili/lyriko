@@ -1,3 +1,4 @@
+import { Scalar } from '@scalar/hono-api-reference';
 import { StatusCode } from '@workspace/constants/status-code';
 import { cors } from 'hono/cors';
 import { logger } from 'hono/logger';
@@ -5,6 +6,10 @@ import { swaggerUI } from '@hono/swagger-ui';
 
 import { createRouter } from '@/api/lib/app.js';
 import { createAuth } from '@/api/lib/auth';
+import {
+  getMergedOpenAPISchema,
+  getBetterAuthSchema,
+} from '@/api/lib/openapi-merge';
 import createPrisma from '@/api/middleware/prisma';
 import { registerRoutes } from '@/api/routes';
 
@@ -49,30 +54,42 @@ app.on(['GET', 'POST'], '/api/auth/*', (c) => {
 // Routes
 registerRoutes(app);
 
-// OpenAPI documentation endpoints
-app.doc('/openapi.json', {
-  openapi: '3.1.0',
-  info: {
-    title: 'Lyriko API',
-    version: '1.0.0',
-    description: 'A music lyrics platform API built with Hono and OpenAPI',
-  },
-});
-
-app.get('/doc', swaggerUI({ url: '/openapi.json' }));
-
-app.get('/', (c) => {
-  return c.json({
-    message: 'Lyriko API',
-    version: '1.0.0',
-    endpoints: {
-      users: '/api/users',
-      auth: '/api/auth',
-      docs: '/doc',
-      openapi: '/openapi.json',
+// Main OpenAPI documentation endpoint - now serves merged schema
+app.get('/doc', async (c) => {
+  const mainSchema = app.getOpenAPIDocument({
+    openapi: '3.1.0',
+    info: {
+      title: 'Lyriko API',
+      version: '1.0.0',
+      description: 'A music lyrics platform API built with Hono and OpenAPI',
     },
   });
+
+  const mergedSchema = await getMergedOpenAPISchema(c, mainSchema);
+  return c.json(mergedSchema);
 });
+
+// Better Auth only schema (for debugging)
+app.get('/auth-schema.json', async (c) => {
+  const authSchema = await getBetterAuthSchema(c);
+  return c.json(authSchema);
+});
+
+// Main application schema only (for debugging)
+app.get('/app-schema.json', async (c) => {
+  const mainSchema = app.getOpenAPIDocument({
+    openapi: '3.1.0',
+    info: {
+      title: 'Lyriko API',
+      version: '1.0.0',
+      description: 'A music lyrics platform API built with Hono and OpenAPI',
+    },
+  });
+  return c.json(mainSchema);
+});
+
+app.get('/swagger', swaggerUI({ url: '/doc' }));
+app.get('/scalar', Scalar({ url: '/doc' }));
 
 // Route not found
 app.notFound((c) => {

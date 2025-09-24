@@ -514,12 +514,18 @@ model SongComment {
 
 // Enums
 enum AlbumType {
-  ALBUM
-  SINGLE
-  EP
-  COMPILATION
-  SOUNDTRACK
-  MIXTAPE
+  ALBUM // Full-length album (7+ tracks, 35-60 minutes)
+  LP // Long Play (same as album, alternative naming)
+  SINGLE // 1-3 tracks, under 30 minutes
+  EP // Extended Play (3-6 tracks, 15-30 minutes)
+  COMPILATION // Collection of previously released tracks
+  SOUNDTRACK // Music from films, TV shows, games, etc.
+  MIXTAPE // Informal collection, often promotional
+  DEMO // Rough recordings for development purposes
+  LIVE // Recorded live performance
+  REMIX // Collection of remixed versions
+  GREATEST_HITS // Best of compilation
+  BOOTLEG // Unofficial recording
 }
 
 enum ArtistRole {

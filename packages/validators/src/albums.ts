@@ -1,18 +1,17 @@
 import { z } from 'zod';
 import { extendZodWithOpenApi } from '@hono/zod-openapi';
-import { paginationResponseSchema } from './common';
+import {
+  paginationResponseSchema,
+  emailSchema,
+  datetimeSchema,
+} from '@workspace/validators/common';
+
+import { AlbumType } from '@workspace/prisma';
 
 extendZodWithOpenApi(z);
 
-// Album type enum
-export const albumTypeSchema = z.enum([
-  'ALBUM',
-  'SINGLE',
-  'EP',
-  'COMPILATION',
-  'SOUNDTRACK',
-  'MIXTAPE',
-]);
+// Album type schema using Prisma-generated enum
+export const albumTypeSchema = z.enum(Object.values(AlbumType));
 
 export const createAlbumSchema = z.object({
   title: z
@@ -117,7 +116,6 @@ export const updateAlbumSchema = z.object({
 
 export type CreateAlbumRequest = z.infer<typeof createAlbumSchema>;
 export type UpdateAlbumRequest = z.infer<typeof updateAlbumSchema>;
-export type AlbumType = z.infer<typeof albumTypeSchema>;
 
 export const deleteAlbumResponseSchema = z.object({
   deleted: z.boolean().openapi({ example: true }),
@@ -140,14 +138,21 @@ export const albumResponseSchema = z
     }),
     albumType: albumTypeSchema.openapi({ example: 'ALBUM' }),
     totalTracks: z.number().nullable().openapi({ example: 13 }),
-    createdAt: z
-      .string()
-      .datetime()
-      .openapi({ example: '2023-01-01T00:00:00Z' }),
-    updatedAt: z
-      .string()
-      .datetime()
-      .openapi({ example: '2023-01-01T00:00:00Z' }),
+    createdAt: datetimeSchema,
+    updatedAt: datetimeSchema,
+    creator: z
+      .object({
+        id: z.string().openapi({ example: 'clm7x8y9z0000abcdef123456' }),
+        name: z.string().nullable().openapi({ example: 'John Doe' }),
+        email: emailSchema,
+      })
+      .openapi({
+        example: {
+          id: 'clm7x8y9z0000abcdef123456',
+          name: 'John Doe',
+          email: 'john@example.com',
+        },
+      }),
   })
   .openapi('Album');
 
