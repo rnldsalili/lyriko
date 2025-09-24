@@ -4,7 +4,7 @@ import {
   TooltipTrigger,
 } from '@workspace/ui/base/tooltip';
 import { ConfirmationDialog } from '@workspace/ui/components/confirmation-dialog';
-import { Music, Plus, Edit, Trash2, Disc } from 'lucide-react';
+import { Music, Plus, Edit, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 import { Link, useRevalidator } from 'react-router';
 import { toast } from 'sonner';
@@ -69,33 +69,6 @@ export default function Albums({ loaderData }: Route.ComponentProps) {
     } finally {
       setDeleteDialog({ open: false });
     }
-  };
-
-  const formatReleaseDate = (releaseDate: string | null) => {
-    if (!releaseDate) return '';
-    try {
-      return new Date(releaseDate).getFullYear().toString();
-    } catch {
-      return '';
-    }
-  };
-
-  const getAlbumTypeLabel = (type: string) => {
-    const typeMap: Record<string, string> = {
-      ALBUM: 'Album',
-      LP: 'LP',
-      SINGLE: 'Single',
-      EP: 'EP',
-      COMPILATION: 'Compilation',
-      SOUNDTRACK: 'Soundtrack',
-      MIXTAPE: 'Mixtape',
-      DEMO: 'Demo',
-      LIVE: 'Live',
-      REMIX: 'Remix',
-      GREATEST_HITS: 'Greatest Hits',
-      BOOTLEG: 'Bootleg',
-    };
-    return typeMap[type] || type;
   };
 
   return (
