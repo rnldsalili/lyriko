@@ -10,7 +10,8 @@ import {
   errorResponseSchema,
   notFoundResponseSchema,
   commonGetListSchema,
-  commonGetOneSchema,
+  commonGetOneByIdSchema,
+  commonGetOneBySlugSchema,
 } from '@workspace/validators/common';
 
 import { createRoute } from '@/api/lib/app';
@@ -105,12 +106,12 @@ export const getArtistsRoute = createRoute({
 
 export const getArtistRoute = createRoute({
   method: 'get',
-  path: '/{id}',
+  path: '/{slug}',
   tags: TAGS,
-  summary: 'Get artist by ID',
-  description: 'Retrieves a specific artist by its ID',
+  summary: 'Get artist by slug',
+  description: 'Retrieves a specific artist by its slug',
   request: {
-    params: commonGetOneSchema,
+    params: commonGetOneBySlugSchema,
   },
   responses: {
     200: {
@@ -136,13 +137,13 @@ export const getArtistRoute = createRoute({
 
 export const updateArtistRoute = createRoute({
   method: 'put',
-  path: '/{id}',
+  path: '/{slug}',
   tags: TAGS,
   summary: 'Update artist',
   description: 'Updates an existing artist with the provided information',
   middleware: [requireAuth] as const,
   request: {
-    params: commonGetOneSchema,
+    params: commonGetOneBySlugSchema,
     body: {
       content: {
         'application/json': {
@@ -205,7 +206,7 @@ export const deleteArtistRoute = createRoute({
   description: 'Deletes an existing artist',
   middleware: [requireAuth] as const,
   request: {
-    params: commonGetOneSchema,
+    params: commonGetOneByIdSchema,
   },
   responses: {
     200: {

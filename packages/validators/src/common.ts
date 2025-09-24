@@ -35,9 +35,15 @@ export const commonGetListSchema = z.object({
     }),
 });
 
-export const commonGetOneSchema = z.object({
+export const commonGetOneByIdSchema = z.object({
   id: z.string().describe('Unique identifier').openapi({
     example: 'clm7x8y9z0000abcdef123456',
+  }),
+});
+
+export const commonGetOneBySlugSchema = z.object({
+  slug: z.string().describe('Unique slug identifier').openapi({
+    example: 'example-slug',
   }),
 });
 

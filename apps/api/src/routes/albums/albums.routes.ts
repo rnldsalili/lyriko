@@ -10,7 +10,8 @@ import {
   errorResponseSchema,
   notFoundResponseSchema,
   commonGetListSchema,
-  commonGetOneSchema,
+  commonGetOneByIdSchema,
+  commonGetOneBySlugSchema,
 } from '@workspace/validators/common';
 
 import { createRoute } from '@/api/lib/app';
@@ -105,12 +106,12 @@ export const getAlbumsRoute = createRoute({
 
 export const getAlbumRoute = createRoute({
   method: 'get',
-  path: '/{id}',
+  path: '/{slug}',
   tags: TAGS,
   summary: 'Get album by ID',
   description: 'Retrieves a specific album by its ID',
   request: {
-    params: commonGetOneSchema,
+    params: commonGetOneBySlugSchema,
   },
   responses: {
     200: {
@@ -136,13 +137,13 @@ export const getAlbumRoute = createRoute({
 
 export const updateAlbumRoute = createRoute({
   method: 'put',
-  path: '/{id}',
+  path: '/{slug}',
   tags: TAGS,
   summary: 'Update album',
   description: 'Updates an existing album with the provided information',
   middleware: [requireAuth] as const,
   request: {
-    params: commonGetOneSchema,
+    params: commonGetOneBySlugSchema,
     body: {
       content: {
         'application/json': {
@@ -205,7 +206,7 @@ export const deleteAlbumRoute = createRoute({
   description: 'Deletes an existing album',
   middleware: [requireAuth] as const,
   request: {
-    params: commonGetOneSchema,
+    params: commonGetOneByIdSchema,
   },
   responses: {
     200: {

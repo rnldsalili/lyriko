@@ -1,9 +1,13 @@
 import { useState } from 'react';
 import { Check, Palette } from 'lucide-react';
-import { Button } from '../base/button';
-import { Input } from '../base/input';
-import { Popover, PopoverContent, PopoverTrigger } from '../base/popover';
-import { cn } from '../lib/utils';
+import { Button } from '@workspace/ui/base/button';
+import { Input } from '@workspace/ui/base/input';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@workspace/ui/base/popover';
+import { cn } from '@workspace/ui/lib/utils';
 
 const PRESET_COLORS = [
   '#ef4444', // red

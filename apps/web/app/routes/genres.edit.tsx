@@ -21,38 +21,18 @@ export function meta({ params }: Route.MetaArgs) {
 }
 
 export async function loader({ params }: Route.LoaderArgs) {
-  const { slug } = params;
-
-  if (!slug) {
-    throw new Response('Genre slug is required', { status: 400 });
-  }
-
-  // Find the genre by slug from the genres list
-  const genresResponse = await apiClient.genres.$get({
-    query: { page: 1, limit: 100 },
+  const response = await apiClient.genres[':slug'].$get({
+    param: { slug: params.slug },
   });
 
-  if (!genresResponse.ok) {
-    throw new Error('Failed to fetch genres');
+  if (!response.ok) {
+    if (response.status === 404) {
+      throw new Response('Genre not found', { status: 404 });
+    }
+    throw new Error('Failed to fetch genre');
   }
 
-  const genresData = await genresResponse.json();
-  const genre = genresData.data.genres.find((g) => g.slug === slug);
-
-  if (!genre) {
-    throw new Response('Genre not found', { status: 404 });
-  }
-
-  // Fetch the full genre details using the ID
-  const genreResponse = await apiClient.genres[':id'].$get({
-    param: { id: genre.id },
-  });
-
-  if (!genreResponse.ok) {
-    throw new Error('Failed to fetch genre details');
-  }
-
-  return genreResponse.json();
+  return response.json();
 }
 
 export default function EditGenre({ loaderData }: Route.ComponentProps) {
@@ -63,8 +43,8 @@ export default function EditGenre({ loaderData }: Route.ComponentProps) {
   const handleSubmit = async (values: GenreFormData) => {
     setIsSubmitting(true);
     try {
-      const response = await apiClient.genres[':id'].$put({
-        param: { id: genre.id },
+      const response = await apiClient.genres[':slug'].$put({
+        param: { slug: genre.slug },
         json: {
           name: values.name.trim(),
           description: values.description?.trim() || undefined,

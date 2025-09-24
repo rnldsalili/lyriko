@@ -3,7 +3,8 @@ import {
   errorResponseSchema,
   notFoundResponseSchema,
   commonGetListSchema,
-  commonGetOneSchema,
+  commonGetOneByIdSchema,
+  commonGetOneBySlugSchema,
 } from '@workspace/validators/common';
 import {
   createSongSchema,
@@ -105,12 +106,12 @@ export const getSongsRoute = createRoute({
 
 export const getSongRoute = createRoute({
   method: 'get',
-  path: '/{id}',
+  path: '/{slug}',
   tags: TAGS,
-  summary: 'Get song by ID',
-  description: 'Retrieves a specific song by its ID',
+  summary: 'Get song by slug',
+  description: 'Retrieves a specific song by its slug',
   request: {
-    params: commonGetOneSchema,
+    params: commonGetOneBySlugSchema,
   },
   responses: {
     200: {
@@ -136,13 +137,13 @@ export const getSongRoute = createRoute({
 
 export const updateSongRoute = createRoute({
   method: 'put',
-  path: '/{id}',
+  path: '/{slug}',
   tags: TAGS,
   summary: 'Update song',
   description: 'Updates an existing song with the provided information',
   middleware: [requireAuth] as const,
   request: {
-    params: commonGetOneSchema,
+    params: commonGetOneBySlugSchema,
     body: {
       content: {
         'application/json': {
@@ -205,7 +206,7 @@ export const deleteSongRoute = createRoute({
   description: 'Deletes an existing song',
   middleware: [requireAuth] as const,
   request: {
-    params: commonGetOneSchema,
+    params: commonGetOneByIdSchema,
   },
   responses: {
     200: {

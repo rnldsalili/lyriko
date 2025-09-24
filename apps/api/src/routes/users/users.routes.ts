@@ -3,7 +3,7 @@ import {
   errorResponseSchema,
   notFoundResponseSchema,
   commonGetListSchema,
-  commonGetOneSchema,
+  commonGetOneByIdSchema,
 } from '@workspace/validators/common';
 import {
   createUserSchema,
@@ -118,7 +118,7 @@ export const getUserRoute = createRoute({
   description: 'Retrieves a specific user by their ID',
   middleware: [requireAuth] as const,
   request: {
-    params: commonGetOneSchema,
+    params: commonGetOneByIdSchema,
   },
   responses: {
     200: {

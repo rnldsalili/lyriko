@@ -5,13 +5,24 @@ import {
   emailSchema,
   datetimeSchema,
 } from '@workspace/validators/common';
-
-import { AlbumType } from '@workspace/prisma';
+import { AlbumType } from '@workspace/constants/album';
 
 extendZodWithOpenApi(z);
 
-// Album type schema using Prisma-generated enum
-export const albumTypeSchema = z.enum(Object.values(AlbumType));
+export const albumTypeSchema = z.enum([
+  'ALBUM',
+  'LP',
+  'SINGLE',
+  'EP',
+  'COMPILATION',
+  'SOUNDTRACK',
+  'MIXTAPE',
+  'DEMO',
+  'LIVE',
+  'REMIX',
+  'GREATEST_HITS',
+  'BOOTLEG',
+]);
 
 export const createAlbumSchema = z.object({
   title: z
@@ -52,7 +63,7 @@ export const createAlbumSchema = z.object({
     .default('ALBUM')
     .describe('Type of album')
     .openapi({
-      example: 'ALBUM',
+      example: AlbumType.ALBUM,
     }),
   totalTracks: z
     .number()

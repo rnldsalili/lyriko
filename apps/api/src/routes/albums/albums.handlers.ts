@@ -89,11 +89,11 @@ export const getAlbums: AppRouteHandler<GetAlbums> = async (c) => {
 
 export const getAlbum: AppRouteHandler<GetAlbum> = async (c) => {
   const prisma = c.get('prisma');
-  const { id } = c.req.valid('param');
+  const { slug } = c.req.valid('param');
 
   try {
     const album = await prisma.album.findUnique({
-      where: { id },
+      where: { slug },
       select: {
         id: true,
         title: true,
@@ -214,14 +214,14 @@ export const createAlbum: AppRouteHandler<CreateAlbum> = async (c) => {
 
 export const updateAlbum: AppRouteHandler<UpdateAlbum> = async (c) => {
   const prisma = c.get('prisma');
-  const { id } = c.req.valid('param');
+  const { slug } = c.req.valid('param');
   const updateData = c.req.valid('json');
   const user = c.get('user');
 
   try {
     // Check if album exists
     const existingAlbum = await prisma.album.findUnique({
-      where: { id },
+      where: { slug },
     });
 
     if (!existingAlbum) {
@@ -235,7 +235,9 @@ export const updateAlbum: AppRouteHandler<UpdateAlbum> = async (c) => {
     }
 
     // Generate new slug if title is being updated
-    const slug = updateData.title ? generateSlug(updateData.title) : undefined;
+    const newSlug = updateData.title
+      ? generateSlug(updateData.title)
+      : undefined;
 
     // Convert releaseDate string to Date if provided
     const releaseDate = updateData.releaseDate
@@ -243,10 +245,10 @@ export const updateAlbum: AppRouteHandler<UpdateAlbum> = async (c) => {
       : undefined;
 
     const album = await prisma.album.update({
-      where: { id },
+      where: { id: existingAlbum.id },
       data: {
         ...updateData,
-        ...(slug && { slug }),
+        ...(newSlug && { slug: newSlug }),
         ...(releaseDate && { releaseDate }),
         updatedBy: user.id,
       },
@@ -334,7 +336,7 @@ export const deleteAlbum: AppRouteHandler<DeleteAlbum> = async (c) => {
     }
 
     await prisma.album.delete({
-      where: { id },
+      where: { id: existingAlbum.id },
     });
 
     return c.json(

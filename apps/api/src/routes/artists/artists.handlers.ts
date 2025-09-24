@@ -80,11 +80,11 @@ export const getArtists: AppRouteHandler<GetArtists> = async (c) => {
 
 export const getArtist: AppRouteHandler<GetArtist> = async (c) => {
   const prisma = c.get('prisma');
-  const { id } = c.req.valid('param');
+  const { slug } = c.req.valid('param');
 
   try {
     const artist = await prisma.artist.findUnique({
-      where: { id },
+      where: { slug },
       select: {
         id: true,
         name: true,
@@ -191,13 +191,13 @@ export const createArtist: AppRouteHandler<CreateArtist> = async (c) => {
 
 export const updateArtist: AppRouteHandler<UpdateArtist> = async (c) => {
   const prisma = c.get('prisma');
-  const { id } = c.req.valid('param');
+  const { slug } = c.req.valid('param');
   const updateData = c.req.valid('json');
 
   try {
     // Check if artist exists
     const existingArtist = await prisma.artist.findUnique({
-      where: { id },
+      where: { slug },
     });
 
     if (!existingArtist) {
@@ -211,7 +211,7 @@ export const updateArtist: AppRouteHandler<UpdateArtist> = async (c) => {
     }
 
     // Generate new slug if name is being updated
-    const slug = updateData.name
+    const newSlug = updateData.name
       ? updateData.name
           .toLowerCase()
           .replace(/[^a-z0-9]+/g, '-')
@@ -219,10 +219,10 @@ export const updateArtist: AppRouteHandler<UpdateArtist> = async (c) => {
       : undefined;
 
     const artist = await prisma.artist.update({
-      where: { id },
+      where: { id: existingArtist.id },
       data: {
         ...updateData,
-        ...(slug && { slug }),
+        ...(newSlug && { slug: newSlug }),
         updatedBy: 'system',
       },
       select: {

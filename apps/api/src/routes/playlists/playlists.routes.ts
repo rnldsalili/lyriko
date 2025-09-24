@@ -3,7 +3,7 @@ import {
   errorResponseSchema,
   notFoundResponseSchema,
   commonGetListSchema,
-  commonGetOneSchema,
+  commonGetOneByIdSchema,
 } from '@workspace/validators/common';
 import {
   createPlaylistSchema,
@@ -106,7 +106,7 @@ export const getPlaylistRoute = createRoute({
   summary: 'Get playlist by ID',
   description: 'Retrieves a specific playlist by its ID',
   request: {
-    params: commonGetOneSchema,
+    params: commonGetOneByIdSchema,
   },
   responses: {
     200: {
@@ -138,7 +138,7 @@ export const updatePlaylistRoute = createRoute({
   description: 'Updates an existing playlist with the provided information',
   middleware: [requireAuth] as const,
   request: {
-    params: commonGetOneSchema,
+    params: commonGetOneByIdSchema,
     body: {
       content: {
         'application/json': {
@@ -185,7 +185,7 @@ export const deletePlaylistRoute = createRoute({
   description: 'Deletes an existing playlist',
   middleware: [requireAuth] as const,
   request: {
-    params: commonGetOneSchema,
+    params: commonGetOneByIdSchema,
   },
   responses: {
     200: {
@@ -217,7 +217,7 @@ export const addSongToPlaylistRoute = createRoute({
   description: 'Adds a song to an existing playlist',
   middleware: [requireAuth] as const,
   request: {
-    params: commonGetOneSchema,
+    params: commonGetOneByIdSchema,
     body: {
       content: {
         'application/json': {

@@ -3,67 +3,92 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from '@workspace/ui/base/tooltip';
-import { Music, Plus, Edit, Trash2 } from 'lucide-react';
+import { Music, Plus, Edit, Trash2, Disc } from 'lucide-react';
 import { Link, useRevalidator } from 'react-router';
 import { toast } from 'sonner';
 
 import apiClient from '@/web/lib/api-client';
 import { useSession } from '@/web/lib/auth';
 
-import type { Route } from './+types/genres.list';
+import type { Route } from './+types/albums.list';
 
 export function meta({}: Route.MetaArgs) {
   return [
-    { title: 'Genres - Lyriko' },
-    { name: 'description', content: 'Browse all genres' },
+    { title: 'Albums - Lyriko' },
+    { name: 'description', content: 'Browse all albums' },
   ];
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export async function loader({ params }: Route.LoaderArgs) {
-  const response = await apiClient.genres.$get({
+  const response = await apiClient.albums.$get({
     query: { page: 1, limit: 10 },
   });
 
   if (!response.ok) {
-    throw new Error('Failed to fetch genres');
+    throw new Error('Failed to fetch albums');
   }
 
   return response.json();
 }
 
-export default function Genres({ loaderData }: Route.ComponentProps) {
+export default function Albums({ loaderData }: Route.ComponentProps) {
   const { data } = loaderData;
   const { data: session } = useSession();
   const revalidator = useRevalidator();
 
-  const handleDelete = async (genreId: string, genreName: string) => {
-    toast(`Delete "${genreName}"?`, {
+  const handleDelete = async (albumId: string, albumTitle: string) => {
+    toast(`Delete "${albumTitle}"?`, {
       description: 'This action cannot be undone.',
       action: {
         label: 'Delete',
         onClick: async () => {
           try {
-            const response = await apiClient.genres[':id'].$delete({
-              param: { id: genreId },
+            const response = await apiClient.albums[':id'].$delete({
+              param: { id: albumId },
             });
 
             if (response.ok) {
-              toast.success('Genre deleted successfully');
+              toast.success('Album deleted successfully');
               revalidator.revalidate();
             } else {
               const errorData = await response.json();
               toast.error(
-                errorData.error || 'Failed to delete genre. Please try again.',
+                errorData.error || 'Failed to delete album. Please try again.',
               );
             }
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars
           } catch (error) {
-            toast.error('An error occurred while deleting the genre.');
+            toast.error('An error occurred while deleting the album.');
           }
         },
       },
     });
+  };
+
+  const formatReleaseDate = (releaseDate: string | null) => {
+    if (!releaseDate) return '';
+    try {
+      return new Date(releaseDate).getFullYear().toString();
+    } catch {
+      return '';
+    }
+  };
+
+  const getAlbumTypeLabel = (type: string) => {
+    const typeMap: Record<string, string> = {
+      ALBUM: 'Album',
+      LP: 'LP',
+      SINGLE: 'Single',
+      EP: 'EP',
+      COMPILATION: 'Compilation',
+      SOUNDTRACK: 'Soundtrack',
+      MIXTAPE: 'Mixtape',
+      DEMO: 'Demo',
+      LIVE: 'Live',
+      REMIX: 'Remix',
+      GREATEST_HITS: 'Greatest Hits',
+      BOOTLEG: 'Bootleg',
+    };
+    return typeMap[type] || type;
   };
 
   return (
@@ -72,58 +97,51 @@ export default function Genres({ loaderData }: Route.ComponentProps) {
         {/* Compact Header */}
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h1 className="text-3xl font-bold mb-1">Genres</h1>
+            <h1 className="text-3xl font-bold mb-1">Albums</h1>
             <p className="text-muted-foreground text-sm">
-              {data.pagination.total} genres available
+              {data.pagination.total} albums available
             </p>
           </div>
 
-          {/* Create Genre Button - Only show for authenticated users */}
+          {/* Create Album Button - Only show for authenticated users */}
           {session?.user && (
             <Link
               className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-4 py-2 rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors"
-              to="/genres/create"
+              to="/albums/create"
             >
               <Plus className="w-4 h-4" />
-              Create Genre
+              Create Album
             </Link>
           )}
         </div>
 
-        {/* Compact Genre Grid */}
+        {/* Compact Album Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4">
-          {data.genres.map((genre) => (
-            <div className="group relative" key={genre.id}>
-              <Link className="block" to={`/genres/${genre.slug}`}>
+          {data.albums.map((album) => (
+            <div className="group relative" key={album.id}>
+              <Link className="block" to={`/albums/${album.slug}`}>
                 <div className="relative bg-card border border-border rounded-lg p-4 hover:bg-card/80 hover:border-primary/50 hover:shadow-md transition-all duration-200 h-20 flex flex-col justify-between overflow-hidden">
                   {/* Background gradient effect */}
-                  <div
-                    className="absolute inset-0 opacity-5 rounded-lg"
-                    style={{
-                      background: genre.color
-                        ? `linear-gradient(135deg, ${genre.color}, ${genre.color}50)`
-                        : 'linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary)/0.5))',
-                    }}
-                  />
+                  <div className="absolute inset-0 opacity-5 rounded-lg bg-gradient-to-r from-primary to-primary/60" />
 
                   <div className="relative z-10 flex flex-col justify-between h-full">
-                    {/* Genre Name */}
+                    {/* Album Title */}
                     <h3 className="font-semibold text-card-foreground group-hover:text-primary transition-colors truncate">
-                      {genre.name}
+                      {album.title}
                     </h3>
 
                     {/* Description */}
-                    {genre.description && (
+                    {album.description && (
                       <Tooltip>
                         <TooltipTrigger asChild>
                           <div className="text-xs text-muted-foreground cursor-default">
                             <span className="truncate line-clamp-2">
-                              {genre.description}
+                              {album.description}
                             </span>
                           </div>
                         </TooltipTrigger>
                         <TooltipContent>
-                          <p className="max-w-xs">{genre.description}</p>
+                          <p className="max-w-xs">{album.description}</p>
                         </TooltipContent>
                       </Tooltip>
                     )}
@@ -137,7 +155,7 @@ export default function Genres({ loaderData }: Route.ComponentProps) {
                   <Link
                     className="p-1.5 bg-background/90 backdrop-blur-sm border border-border rounded hover:bg-primary hover:text-primary-foreground transition-colors"
                     onClick={(e) => e.stopPropagation()}
-                    to={`/genres/${genre.slug}/edit`}
+                    to={`/albums/${album.slug}/edit`}
                   >
                     <Edit className="w-3 h-3" />
                   </Link>
@@ -146,7 +164,7 @@ export default function Genres({ loaderData }: Route.ComponentProps) {
                     onClick={(e) => {
                       e.preventDefault();
                       e.stopPropagation();
-                      handleDelete(genre.id, genre.name);
+                      handleDelete(album.id, album.title);
                     }}
                   >
                     <Trash2 className="w-3 h-3" />
@@ -158,26 +176,26 @@ export default function Genres({ loaderData }: Route.ComponentProps) {
         </div>
 
         {/* Empty State */}
-        {data.genres.length === 0 && (
+        {data.albums.length === 0 && (
           <div className="text-center py-24">
             <div className="mx-auto w-24 h-24 bg-muted/20 rounded-full flex items-center justify-center mb-8">
               <Music className="w-12 h-12 text-muted-foreground/40" />
             </div>
             <h3 className="text-2xl font-semibold text-foreground mb-2">
-              No genres found
+              No albums found
             </h3>
             <p className="text-muted-foreground max-w-md mx-auto">
-              It looks like there are no genres available right now. Check back
-              later for new musical discoveries.
+              It looks like there are no albums available right now. Check back
+              later for new musical releases.
             </p>
             {session?.user && (
               <div className="mt-6">
                 <Link
                   className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-6 py-3 rounded-full font-medium hover:bg-primary/90 transition-colors shadow-lg hover:shadow-xl"
-                  to="/genres/create"
+                  to="/albums/create"
                 >
                   <Plus className="w-5 h-5" />
-                  Create the First Genre
+                  Create the First Album
                 </Link>
               </div>
             )}

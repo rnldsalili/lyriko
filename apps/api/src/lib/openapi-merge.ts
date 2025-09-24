@@ -38,7 +38,6 @@ export async function getMergedOpenAPISchema(c: Context<Env>, mainSchema: any) {
     const prefixedAuthPaths: any = {};
     if (authSchema.paths) {
       Object.keys(authSchema.paths).forEach((path) => {
-        console.log(path);
         // Only include allowed authentication paths
         if (allowedAuthPaths.includes(path)) {
           const prefixedPath = `/api/auth${path}`;

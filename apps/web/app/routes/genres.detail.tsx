@@ -17,33 +17,18 @@ export function meta({ params }: Route.MetaArgs) {
 }
 
 export async function loader({ params }: Route.LoaderArgs) {
-  // For now, we'll need to find the genre by slug from the genres list
-  // This is a temporary solution until we have a slug-based API endpoint
-  const genresResponse = await apiClient.genres.$get({
-    query: { page: 1, limit: 100 }, // Get a large list to find the genre
+  const response = await apiClient.genres[':slug'].$get({
+    param: { slug: params.slug },
   });
 
-  if (!genresResponse.ok) {
-    throw new Error('Failed to fetch genres');
+  if (!response.ok) {
+    if (response.status === 404) {
+      throw new Response('Genre not found', { status: 404 });
+    }
+    throw new Error('Failed to fetch genre');
   }
 
-  const genresData = await genresResponse.json();
-  const genre = genresData.data.genres.find((g) => g.slug === params.slug);
-
-  if (!genre) {
-    throw new Response('Genre not found', { status: 404 });
-  }
-
-  // Fetch the full genre details using the ID
-  const genreResponse = await apiClient.genres[':id'].$get({
-    param: { id: genre.id },
-  });
-
-  if (!genreResponse.ok) {
-    throw new Error('Failed to fetch genre details');
-  }
-
-  return genreResponse.json();
+  return response.json();
 }
 
 export default function Genre({ loaderData }: Route.ComponentProps) {

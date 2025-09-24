@@ -91,11 +91,11 @@ export const getSongs: AppRouteHandler<GetSongs> = async (c) => {
 
 export const getSong: AppRouteHandler<GetSong> = async (c) => {
   const prisma = c.get('prisma');
-  const { id } = c.req.valid('param');
+  const { slug } = c.req.valid('param');
 
   try {
     const song = await prisma.song.findUnique({
-      where: { id },
+      where: { slug },
       select: {
         id: true,
         title: true,
@@ -224,13 +224,13 @@ export const createSong: AppRouteHandler<CreateSong> = async (c) => {
 
 export const updateSong: AppRouteHandler<UpdateSong> = async (c) => {
   const prisma = c.get('prisma');
-  const { id } = c.req.valid('param');
+  const { slug } = c.req.valid('param');
   const updateData = c.req.valid('json');
 
   try {
     // Check if song exists
     const existingSong = await prisma.song.findUnique({
-      where: { id },
+      where: { slug },
     });
 
     if (!existingSong) {
@@ -244,7 +244,7 @@ export const updateSong: AppRouteHandler<UpdateSong> = async (c) => {
     }
 
     // Generate new slug if title is being updated
-    const slug = updateData.title
+    const newSlug = updateData.title
       ? updateData.title
           .toLowerCase()
           .replace(/[^a-z0-9]+/g, '-')
@@ -257,10 +257,10 @@ export const updateSong: AppRouteHandler<UpdateSong> = async (c) => {
       : undefined;
 
     const song = await prisma.song.update({
-      where: { id },
+      where: { id: existingSong.id },
       data: {
         ...updateData,
-        ...(slug && { slug }),
+        ...(newSlug && { slug: newSlug }),
         ...(releaseDate && { releaseDate }),
         updatedBy: 'system',
       },

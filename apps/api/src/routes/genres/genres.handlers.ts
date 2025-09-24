@@ -86,11 +86,11 @@ export const getGenres: AppRouteHandler<GetGenres> = async (c) => {
 
 export const getGenre: AppRouteHandler<GetGenre> = async (c) => {
   const prisma = c.get('prisma');
-  const { id } = c.req.valid('param');
+  const { slug } = c.req.valid('param');
 
   try {
     const genre = await prisma.genre.findUnique({
-      where: { id },
+      where: { slug },
       select: {
         id: true,
         name: true,
@@ -199,14 +199,14 @@ export const createGenre: AppRouteHandler<CreateGenre> = async (c) => {
 
 export const updateGenre: AppRouteHandler<UpdateGenre> = async (c) => {
   const prisma = c.get('prisma');
-  const { id } = c.req.valid('param');
+  const { slug } = c.req.valid('param');
   const updateData = c.req.valid('json');
   const user = c.get('user');
 
   try {
     // Check if genre exists
     const existingGenre = await prisma.genre.findUnique({
-      where: { id },
+      where: { slug },
     });
 
     if (!existingGenre) {
@@ -220,13 +220,13 @@ export const updateGenre: AppRouteHandler<UpdateGenre> = async (c) => {
     }
 
     // Generate new slug if name is being updated
-    const slug = updateData.name ? generateSlug(updateData.name) : undefined;
+    const newSlug = updateData.name ? generateSlug(updateData.name) : undefined;
 
     const genre = await prisma.genre.update({
-      where: { id },
+      where: { id: existingGenre.id },
       data: {
         ...updateData,
-        ...(slug && { slug }),
+        ...(newSlug && { slug: newSlug }),
         updatedBy: user.id,
       },
       select: {
@@ -311,7 +311,7 @@ export const deleteGenre: AppRouteHandler<DeleteGenre> = async (c) => {
     }
 
     await prisma.genre.delete({
-      where: { id },
+      where: { id: existingGenre.id },
     });
 
     return c.json(

@@ -3,7 +3,8 @@ import {
   errorResponseSchema,
   notFoundResponseSchema,
   commonGetListSchema,
-  commonGetOneSchema,
+  commonGetOneByIdSchema,
+  commonGetOneBySlugSchema,
 } from '@workspace/validators/common';
 import {
   createGenreSchema,
@@ -105,12 +106,12 @@ export const getGenresRoute = createRoute({
 
 export const getGenreRoute = createRoute({
   method: 'get',
-  path: '/{id}',
+  path: '/{slug}',
   tags: TAGS,
-  summary: 'Get genre by ID',
-  description: 'Retrieves a specific genre by its ID',
+  summary: 'Get genre by slug',
+  description: 'Retrieves a specific genre by its slug',
   request: {
-    params: commonGetOneSchema,
+    params: commonGetOneBySlugSchema,
   },
   responses: {
     200: {
@@ -136,13 +137,13 @@ export const getGenreRoute = createRoute({
 
 export const updateGenreRoute = createRoute({
   method: 'put',
-  path: '/{id}',
+  path: '/{slug}',
   tags: TAGS,
   summary: 'Update genre',
   description: 'Updates an existing genre with the provided information',
   middleware: [requireAuth] as const,
   request: {
-    params: commonGetOneSchema,
+    params: commonGetOneBySlugSchema,
     body: {
       content: {
         'application/json': {
@@ -205,7 +206,7 @@ export const deleteGenreRoute = createRoute({
   description: 'Deletes an existing genre',
   middleware: [requireAuth] as const,
   request: {
-    params: commonGetOneSchema,
+    params: commonGetOneByIdSchema,
   },
   responses: {
     200: {
