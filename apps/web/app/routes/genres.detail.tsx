@@ -1,4 +1,6 @@
+import { ConfirmationDialog } from '@workspace/ui/components/confirmation-dialog';
 import { Music, User, Calendar, Edit, Trash2 } from 'lucide-react';
+import { useState } from 'react';
 import { Link, useNavigate } from 'react-router';
 
 import { BackNavigation } from '@/web/components/back-navigation';
@@ -35,16 +37,9 @@ export default function Genre({ loaderData }: Route.ComponentProps) {
   const { data: genre } = loaderData;
   const { data: session } = useSession();
   const navigate = useNavigate();
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
   const handleDelete = async () => {
-    if (
-      !confirm(
-        `Are you sure you want to delete "${genre.name}"? This action cannot be undone.`,
-      )
-    ) {
-      return;
-    }
-
     try {
       const response = await apiClient.genres[':id'].$delete({
         param: { id: genre.id },
@@ -59,6 +54,8 @@ export default function Genre({ loaderData }: Route.ComponentProps) {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       alert('An error occurred while deleting the genre.');
+    } finally {
+      setShowDeleteDialog(false);
     }
   };
 
@@ -112,7 +109,7 @@ export default function Genre({ loaderData }: Route.ComponentProps) {
                 </Link>
                 <button
                   className="inline-flex items-center gap-2 bg-destructive text-destructive-foreground px-3 py-1.5 text-sm rounded-lg hover:bg-destructive/90 transition-colors"
-                  onClick={handleDelete}
+                  onClick={() => setShowDeleteDialog(true)}
                 >
                   <Trash2 className="w-3 h-3" />
                   Delete
@@ -219,6 +216,17 @@ export default function Genre({ loaderData }: Route.ComponentProps) {
           </div>
         </div>
       </div>
+
+      <ConfirmationDialog
+        cancelText="Cancel"
+        confirmButtonClassName="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+        confirmText="Delete"
+        description={`Are you sure you want to delete "${genre.name}"? This action cannot be undone.`}
+        onConfirm={handleDelete}
+        onOpenChange={setShowDeleteDialog}
+        open={showDeleteDialog}
+        title="Delete Genre"
+      />
     </div>
   );
 }

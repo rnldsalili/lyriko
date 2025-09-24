@@ -3,7 +3,9 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from '@workspace/ui/base/tooltip';
+import { ConfirmationDialog } from '@workspace/ui/components/confirmation-dialog';
 import { Music, Plus, Edit, Trash2, Disc } from 'lucide-react';
+import { useState } from 'react';
 import { Link, useRevalidator } from 'react-router';
 import { toast } from 'sonner';
 
@@ -35,33 +37,38 @@ export default function Albums({ loaderData }: Route.ComponentProps) {
   const { data } = loaderData;
   const { data: session } = useSession();
   const revalidator = useRevalidator();
+  const [deleteDialog, setDeleteDialog] = useState<{
+    open: boolean;
+    albumId?: string;
+    albumTitle?: string;
+  }>({ open: false });
 
-  const handleDelete = async (albumId: string, albumTitle: string) => {
-    toast(`Delete "${albumTitle}"?`, {
-      description: 'This action cannot be undone.',
-      action: {
-        label: 'Delete',
-        onClick: async () => {
-          try {
-            const response = await apiClient.albums[':id'].$delete({
-              param: { id: albumId },
-            });
+  const handleDeleteClick = (albumId: string, albumTitle: string) => {
+    setDeleteDialog({ open: true, albumId, albumTitle });
+  };
 
-            if (response.ok) {
-              toast.success('Album deleted successfully');
-              revalidator.revalidate();
-            } else {
-              const errorData = await response.json();
-              toast.error(
-                errorData.error || 'Failed to delete album. Please try again.',
-              );
-            }
-          } catch (error) {
-            toast.error('An error occurred while deleting the album.');
-          }
-        },
-      },
-    });
+  const handleDelete = async () => {
+    if (!deleteDialog.albumId) return;
+
+    try {
+      const response = await apiClient.albums[':id'].$delete({
+        param: { id: deleteDialog.albumId },
+      });
+
+      if (response.ok) {
+        toast.success('Album deleted successfully');
+        revalidator.revalidate();
+      } else {
+        const errorData = await response.json();
+        toast.error(
+          errorData.error || 'Failed to delete album. Please try again.',
+        );
+      }
+    } catch (error) {
+      toast.error('An error occurred while deleting the album.');
+    } finally {
+      setDeleteDialog({ open: false });
+    }
   };
 
   const formatReleaseDate = (releaseDate: string | null) => {
@@ -164,7 +171,7 @@ export default function Albums({ loaderData }: Route.ComponentProps) {
                     onClick={(e) => {
                       e.preventDefault();
                       e.stopPropagation();
-                      handleDelete(album.id, album.title);
+                      handleDeleteClick(album.id, album.title);
                     }}
                   >
                     <Trash2 className="w-3 h-3" />
@@ -201,6 +208,17 @@ export default function Albums({ loaderData }: Route.ComponentProps) {
             )}
           </div>
         )}
+
+        <ConfirmationDialog
+          cancelText="Cancel"
+          confirmButtonClassName="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+          confirmText="Delete"
+          description={`Are you sure you want to delete "${deleteDialog.albumTitle}"? This action cannot be undone.`}
+          onConfirm={handleDelete}
+          onOpenChange={(open) => setDeleteDialog({ open })}
+          open={deleteDialog.open}
+          title="Delete Album"
+        />
       </div>
     </div>
   );

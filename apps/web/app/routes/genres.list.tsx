@@ -3,7 +3,9 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from '@workspace/ui/base/tooltip';
+import { ConfirmationDialog } from '@workspace/ui/components/confirmation-dialog';
 import { Music, Plus, Edit, Trash2 } from 'lucide-react';
+import { useState } from 'react';
 import { Link, useRevalidator } from 'react-router';
 import { toast } from 'sonner';
 
@@ -36,34 +38,39 @@ export default function Genres({ loaderData }: Route.ComponentProps) {
   const { data } = loaderData;
   const { data: session } = useSession();
   const revalidator = useRevalidator();
+  const [deleteDialog, setDeleteDialog] = useState<{
+    open: boolean;
+    genreId?: string;
+    genreName?: string;
+  }>({ open: false });
 
-  const handleDelete = async (genreId: string, genreName: string) => {
-    toast(`Delete "${genreName}"?`, {
-      description: 'This action cannot be undone.',
-      action: {
-        label: 'Delete',
-        onClick: async () => {
-          try {
-            const response = await apiClient.genres[':id'].$delete({
-              param: { id: genreId },
-            });
+  const handleDeleteClick = (genreId: string, genreName: string) => {
+    setDeleteDialog({ open: true, genreId, genreName });
+  };
 
-            if (response.ok) {
-              toast.success('Genre deleted successfully');
-              revalidator.revalidate();
-            } else {
-              const errorData = await response.json();
-              toast.error(
-                errorData.error || 'Failed to delete genre. Please try again.',
-              );
-            }
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars
-          } catch (error) {
-            toast.error('An error occurred while deleting the genre.');
-          }
-        },
-      },
-    });
+  const handleDelete = async () => {
+    if (!deleteDialog.genreId) return;
+
+    try {
+      const response = await apiClient.genres[':id'].$delete({
+        param: { id: deleteDialog.genreId },
+      });
+
+      if (response.ok) {
+        toast.success('Genre deleted successfully');
+        revalidator.revalidate();
+      } else {
+        const errorData = await response.json();
+        toast.error(
+          errorData.error || 'Failed to delete genre. Please try again.',
+        );
+      }
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (error) {
+      toast.error('An error occurred while deleting the genre.');
+    } finally {
+      setDeleteDialog({ open: false });
+    }
   };
 
   return (
@@ -146,7 +153,7 @@ export default function Genres({ loaderData }: Route.ComponentProps) {
                     onClick={(e) => {
                       e.preventDefault();
                       e.stopPropagation();
-                      handleDelete(genre.id, genre.name);
+                      handleDeleteClick(genre.id, genre.name);
                     }}
                   >
                     <Trash2 className="w-3 h-3" />
@@ -183,6 +190,17 @@ export default function Genres({ loaderData }: Route.ComponentProps) {
             )}
           </div>
         )}
+
+        <ConfirmationDialog
+          cancelText="Cancel"
+          confirmButtonClassName="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+          confirmText="Delete"
+          description={`Are you sure you want to delete "${deleteDialog.genreName}"? This action cannot be undone.`}
+          onConfirm={handleDelete}
+          onOpenChange={(open) => setDeleteDialog({ open })}
+          open={deleteDialog.open}
+          title="Delete Genre"
+        />
       </div>
     </div>
   );

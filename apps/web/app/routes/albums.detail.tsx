@@ -1,4 +1,6 @@
+import { ConfirmationDialog } from '@workspace/ui/components/confirmation-dialog';
 import { Calendar, Disc, Edit, Music, Trash2, User } from 'lucide-react';
+import { useState } from 'react';
 import { Link, useNavigate, useRevalidator } from 'react-router';
 import { toast } from 'sonner';
 
@@ -38,33 +40,28 @@ export default function AlbumDetail({
   const { data: session } = useSession();
   const navigate = useNavigate();
   const revalidator = useRevalidator();
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
   const handleDelete = async () => {
-    toast(`Delete "${album.title}"?`, {
-      description: 'This action cannot be undone.',
-      action: {
-        label: 'Delete',
-        onClick: async () => {
-          try {
-            const response = await apiClient.albums[':id'].$delete({
-              param: { id: album.id },
-            });
+    try {
+      const response = await apiClient.albums[':id'].$delete({
+        param: { id: album.id },
+      });
 
-            if (response.ok) {
-              toast.success('Album deleted successfully');
-              navigate('/albums');
-            } else {
-              const errorData = await response.json();
-              toast.error(
-                errorData.error || 'Failed to delete album. Please try again.',
-              );
-            }
-          } catch (error) {
-            toast.error('An error occurred while deleting the album.');
-          }
-        },
-      },
-    });
+      if (response.ok) {
+        toast.success('Album deleted successfully');
+        navigate('/albums');
+      } else {
+        const errorData = await response.json();
+        toast.error(
+          errorData.error || 'Failed to delete album. Please try again.',
+        );
+      }
+    } catch (error) {
+      toast.error('An error occurred while deleting the album.');
+    } finally {
+      setShowDeleteDialog(false);
+    }
   };
 
   const formatReleaseDate = (releaseDate: string | null) => {
@@ -166,7 +163,7 @@ export default function AlbumDetail({
                       </Link>
                       <button
                         className="inline-flex items-center gap-2 bg-destructive text-destructive-foreground px-4 py-2 rounded-lg text-sm font-medium hover:bg-destructive/90 transition-colors"
-                        onClick={handleDelete}
+                        onClick={() => setShowDeleteDialog(true)}
                       >
                         <Trash2 className="w-4 h-4" />
                         Delete
@@ -226,6 +223,17 @@ export default function AlbumDetail({
             </p>
           </div>
         </div>
+
+        <ConfirmationDialog
+          cancelText="Cancel"
+          confirmButtonClassName="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+          confirmText="Delete"
+          description={`Are you sure you want to delete "${album.title}"? This action cannot be undone.`}
+          onConfirm={handleDelete}
+          onOpenChange={setShowDeleteDialog}
+          open={showDeleteDialog}
+          title="Delete Album"
+        />
       </div>
     </div>
   );
