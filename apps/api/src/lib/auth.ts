@@ -16,14 +16,14 @@ const authConfig = {
   },
   emailAndPassword: {
     enabled: true,
+    requireEmailVerification: false,
   },
   plugins: [
     openAPI({
       path: '/reference',
-      disableDefaultReference: true, // Disable since we're using merged docs
+      disableDefaultReference: true,
     }),
   ],
-  // Add other auth configuration here
 } satisfies BetterAuthOptions;
 
 // For runtime usage - creates auth with D1 database
@@ -31,6 +31,12 @@ export function createAuth(c: Context<Env>) {
   const prisma = initializePrisma(c.env.DB);
   return betterAuth({
     ...authConfig,
+    socialProviders: {
+      google: {
+        clientId: c.env.GOOGLE_CLIENT_ID,
+        clientSecret: c.env.GOOGLE_CLIENT_SECRET,
+      },
+    },
     database: prismaAdapter(prisma, authConfig.database),
     baseURL: c.env.BETTER_AUTH_URL,
     secret: c.env.BETTER_AUTH_SECRET,
