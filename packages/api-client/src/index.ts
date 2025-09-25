@@ -1,4 +1,4 @@
-import { hc } from 'hono/client';
+import { hc, parseResponse } from 'hono/client';
 
 import type { APIClientRouter } from '@workspace/api/routes';
 import type {
@@ -6,6 +6,8 @@ import type {
   InferResponseType as HonoInferResponseType,
   ClientResponse as HonoClientResponse,
 } from 'hono/client';
+
+export { DetailedError } from 'hono/client';
 
 const createClient = (...args: Parameters<typeof hc>) => {
   const [baseURL, options] = args;
@@ -34,5 +36,7 @@ export type InferRequestType<T> = HonoInferRequestType<T>;
 export type InferResponseType<T> = HonoInferResponseType<T>;
 
 export type ClientResponse<T> = HonoClientResponse<T>;
+
+export { parseResponse };
 
 export default createClient;

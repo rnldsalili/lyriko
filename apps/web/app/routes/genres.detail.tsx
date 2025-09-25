@@ -1,16 +1,19 @@
+import { DetailedError, parseResponse } from '@workspace/api-client';
 import { ConfirmationDialog } from '@workspace/ui/components/confirmation-dialog';
 import { Music, User, Calendar, Edit, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router';
+import { toast } from 'sonner';
 
 import { BackNavigation } from '@/web/components/back-navigation';
 import apiClient from '@/web/lib/api-client';
 import { useSession } from '@/web/lib/auth';
 
 import type { Route } from './+types/genres.detail';
-export function meta({ params }: Route.MetaArgs) {
+
+export function meta({ params, loaderData: { data } }: Route.MetaArgs) {
   return [
-    { title: `${params.slug} - Lyriko` },
+    { title: `${data.name || params.slug} - Lyriko` },
     {
       name: 'description',
       content: `Explore the ${params.slug} genre and discover amazing music`,
@@ -19,18 +22,11 @@ export function meta({ params }: Route.MetaArgs) {
 }
 
 export async function loader({ params }: Route.LoaderArgs) {
-  const response = await apiClient.genres[':slug'].$get({
-    param: { slug: params.slug },
-  });
-
-  if (!response.ok) {
-    if (response.status === 404) {
-      throw new Response('Genre not found', { status: 404 });
-    }
-    throw new Error('Failed to fetch genre');
-  }
-
-  return response.json();
+  return await parseResponse(
+    apiClient.genres[':slug'].$get({
+      param: { slug: params.slug },
+    }),
+  );
 }
 
 export default function Genre({ loaderData }: Route.ComponentProps) {
@@ -41,19 +37,20 @@ export default function Genre({ loaderData }: Route.ComponentProps) {
 
   const handleDelete = async () => {
     try {
-      const response = await apiClient.genres[':id'].$delete({
-        param: { id: genre.id },
-      });
+      await parseResponse(
+        apiClient.genres[':id'].$delete({
+          param: { id: genre.id },
+        }),
+      );
 
-      if (response.ok) {
-        // Navigate to genres list after successful deletion
-        navigate('/genres');
-      } else {
-        alert('Failed to delete genre. Please try again.');
-      }
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      navigate('/genres');
     } catch (error) {
-      alert('An error occurred while deleting the genre.');
+      if (error instanceof DetailedError) {
+        toast.error(error.message);
+        return;
+      }
+
+      toast.error('An error occurred while deleting the genre.');
     } finally {
       setShowDeleteDialog(false);
     }
