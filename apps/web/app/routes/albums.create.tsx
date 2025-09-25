@@ -1,3 +1,4 @@
+import { DetailedError, parseResponse } from '@workspace/api-client';
 import { Plus } from 'lucide-react';
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
@@ -37,22 +38,21 @@ export default function CreateAlbum() {
         totalTracks: values.totalTracks || undefined,
       };
 
-      const response = await apiClient.albums.$post({
-        json: albumData,
-      });
+      const result = await parseResponse(
+        apiClient.albums.$post({
+          json: albumData,
+        }),
+      );
 
-      if (response.ok) {
-        const result = await response.json();
-        toast.success('Album created successfully!');
-        // Navigate to the created album page
-        navigate(`/albums/${result.data.slug}`);
-      } else {
-        const errorData = await response.json();
-        toast.error(
-          errorData.error || 'Failed to create album. Please try again.',
-        );
-      }
+      toast.success('Album created successfully!');
+      // Navigate to the created album page
+      navigate(`/albums/${result.data.slug}`);
     } catch (error) {
+      if (error instanceof DetailedError) {
+        toast.error(error.message);
+        return;
+      }
+
       toast.error('An error occurred while creating the album.');
     } finally {
       setIsSubmitting(false);

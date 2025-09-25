@@ -1,7 +1,9 @@
+import { DetailedError, parseResponse } from '@workspace/api-client';
+import { ALBUM_TYPE_LABELS } from '@workspace/constants/album';
 import { ConfirmationDialog } from '@workspace/ui/components/confirmation-dialog';
 import { Calendar, Disc, Edit, Music, Trash2, User } from 'lucide-react';
 import { useState } from 'react';
-import { Link, useNavigate, useRevalidator } from 'react-router';
+import { Link, useNavigate } from 'react-router';
 import { toast } from 'sonner';
 
 import { BackNavigation } from '@/web/components/back-navigation';
@@ -9,55 +11,48 @@ import apiClient from '@/web/lib/api-client';
 import { useSession } from '@/web/lib/auth';
 
 import type { Route } from './+types/albums.detail';
+import type { AlbumType } from '@workspace/constants/album';
 
-export function meta({ params }: Route.MetaArgs) {
+export function meta({ params, loaderData: { data } }: Route.MetaArgs) {
   return [
-    { title: `Album ${params.slug} - Lyriko` },
-    { name: 'description', content: 'Album details page' },
+    { title: `${data.title || params.slug} - Lyriko` },
+    {
+      name: 'description',
+      content: `Explore the ${params.slug} album and discover amazing music`,
+    },
   ];
 }
 
 export async function loader({ params }: Route.LoaderArgs) {
-  const response = await apiClient.albums[':slug'].$get({
-    param: { slug: params.slug },
-  });
-
-  if (!response.ok) {
-    if (response.status === 404) {
-      throw new Response('Album not found', { status: 404 });
-    }
-    throw new Error('Failed to fetch album');
-  }
-
-  return response.json();
+  return await parseResponse(
+    apiClient.albums[':slug'].$get({
+      param: { slug: params.slug },
+    }),
+  );
 }
 
-export default function AlbumDetail({
-  params,
-  loaderData,
-}: Route.ComponentProps) {
+export default function AlbumDetail({ loaderData }: Route.ComponentProps) {
   const { data: album } = loaderData;
   const { data: session } = useSession();
   const navigate = useNavigate();
-  const revalidator = useRevalidator();
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
   const handleDelete = async () => {
     try {
-      const response = await apiClient.albums[':id'].$delete({
-        param: { id: album.id },
-      });
+      await parseResponse(
+        apiClient.albums[':id'].$delete({
+          param: { id: album.id },
+        }),
+      );
 
-      if (response.ok) {
-        toast.success('Album deleted successfully');
-        navigate('/albums');
-      } else {
-        const errorData = await response.json();
-        toast.error(
-          errorData.error || 'Failed to delete album. Please try again.',
-        );
-      }
+      toast.success(`"${album.title}" deleted successfully!`);
+      navigate('/albums');
     } catch (error) {
+      if (error instanceof DetailedError) {
+        toast.error(error.message);
+        return;
+      }
+
       toast.error('An error occurred while deleting the album.');
     } finally {
       setShowDeleteDialog(false);
@@ -75,24 +70,6 @@ export default function AlbumDetail({
     } catch {
       return null;
     }
-  };
-
-  const getAlbumTypeLabel = (type: string) => {
-    const typeMap: Record<string, string> = {
-      ALBUM: 'Album',
-      LP: 'LP',
-      SINGLE: 'Single',
-      EP: 'EP',
-      COMPILATION: 'Compilation',
-      SOUNDTRACK: 'Soundtrack',
-      MIXTAPE: 'Mixtape',
-      DEMO: 'Demo',
-      LIVE: 'Live',
-      REMIX: 'Remix',
-      GREATEST_HITS: 'Greatest Hits',
-      BOOTLEG: 'Bootleg',
-    };
-    return typeMap[type] || type;
   };
 
   return (
@@ -140,7 +117,8 @@ export default function AlbumDetail({
                     <div className="flex items-center gap-2 text-muted-foreground mb-2">
                       <span className="inline-flex items-center gap-1 bg-primary/10 text-primary px-2 py-1 rounded-md text-sm font-medium">
                         <Music className="w-3 h-3" />
-                        {getAlbumTypeLabel(album.albumType)}
+                        {ALBUM_TYPE_LABELS[album.albumType as AlbumType] ||
+                          album.albumType}
                       </span>
                       {album.totalTracks && (
                         <span className="text-sm">
@@ -203,12 +181,6 @@ export default function AlbumDetail({
             )}
           </div>
         </div>
-
-        {/* Additional sections can be added here, such as:
-            - Track listing (when available)
-            - Related albums
-            - Comments/Reviews
-        */}
 
         {/* Placeholder for future track listing */}
         <div className="bg-card border border-border rounded-xl p-6">

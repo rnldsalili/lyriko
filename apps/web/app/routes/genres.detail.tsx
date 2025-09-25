@@ -43,6 +43,7 @@ export default function Genre({ loaderData }: Route.ComponentProps) {
         }),
       );
 
+      toast.success(`"${genre.name}" deleted successfully!`);
       navigate('/genres');
     } catch (error) {
       if (error instanceof DetailedError) {

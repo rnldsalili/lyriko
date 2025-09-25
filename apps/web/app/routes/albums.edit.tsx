@@ -1,3 +1,4 @@
+import { DetailedError, parseResponse } from '@workspace/api-client';
 import { Edit } from 'lucide-react';
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
@@ -10,35 +11,25 @@ import apiClient from '@/web/lib/api-client';
 
 import type { Route } from './+types/albums.edit';
 
-export function meta({ params }: Route.MetaArgs) {
+export function meta({ params, loaderData: { data } }: Route.MetaArgs) {
   return [
-    { title: `Edit Album ${params.slug} - Lyriko` },
+    { title: `Edit ${data.title || params.slug} - Lyriko` },
     {
       name: 'description',
-      content: 'Edit album information',
+      content: `Edit album information for ${params.slug}`,
     },
   ];
 }
 
 export async function loader({ params }: Route.LoaderArgs) {
-  const response = await apiClient.albums[':slug'].$get({
-    param: { slug: params.slug },
-  });
-
-  if (!response.ok) {
-    if (response.status === 404) {
-      throw new Response('Album not found', { status: 404 });
-    }
-    throw new Error('Failed to fetch album');
-  }
-
-  return response.json();
+  return await parseResponse(
+    apiClient.albums[':slug'].$get({
+      param: { slug: params.slug },
+    }),
+  );
 }
 
-export default function EditAlbum({
-  params,
-  loaderData,
-}: Route.ComponentProps) {
+export default function EditAlbum({ loaderData }: Route.ComponentProps) {
   const { data: album } = loaderData;
   const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -56,23 +47,22 @@ export default function EditAlbum({
         totalTracks: values.totalTracks || undefined,
       };
 
-      const response = await apiClient.albums[':slug'].$put({
-        param: { slug: album.slug },
-        json: albumData,
-      });
+      const result = await parseResponse(
+        apiClient.albums[':slug'].$put({
+          param: { slug: album.slug },
+          json: albumData,
+        }),
+      );
 
-      if (response.ok) {
-        const result = await response.json();
-        toast.success('Album updated successfully!');
-        // Navigate to the updated album page
-        navigate(`/albums/${result.data.slug}`);
-      } else {
-        const errorData = await response.json();
-        toast.error(
-          errorData.error || 'Failed to update album. Please try again.',
-        );
-      }
+      toast.success('Album updated successfully!');
+      // Navigate to the updated album page
+      navigate(`/albums/${result.data.slug}`);
     } catch (error) {
+      if (error instanceof DetailedError) {
+        toast.error(error.message);
+        return;
+      }
+
       toast.error('An error occurred while updating the album.');
     } finally {
       setIsSubmitting(false);
@@ -112,7 +102,7 @@ export default function EditAlbum({
                   Edit Album
                 </h1>
                 <p className="text-muted-foreground">
-                  Update "{album.title}" information
+                  Update &quot;{album.title}&quot; information
                 </p>
               </div>
             </div>

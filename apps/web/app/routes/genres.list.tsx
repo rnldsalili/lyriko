@@ -1,3 +1,4 @@
+import { DetailedError, parseResponse } from '@workspace/api-client';
 import {
   Tooltip,
   TooltipContent,
@@ -21,17 +22,12 @@ export function meta({}: Route.MetaArgs) {
   ];
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-export async function loader({ params }: Route.LoaderArgs) {
-  const response = await apiClient.genres.$get({
-    query: { page: 1, limit: 10 },
-  });
-
-  if (!response.ok) {
-    throw new Error('Failed to fetch genres');
-  }
-
-  return response.json();
+export async function loader({}: Route.LoaderArgs) {
+  return await parseResponse(
+    apiClient.genres.$get({
+      query: { page: 1, limit: 10 },
+    }),
+  );
 }
 
 export default function Genres({ loaderData }: Route.ComponentProps) {
@@ -52,22 +48,20 @@ export default function Genres({ loaderData }: Route.ComponentProps) {
     if (!deleteDialog.genreId) return;
 
     try {
-      const response = await apiClient.genres[':id'].$delete({
-        param: { id: deleteDialog.genreId },
-      });
+      await parseResponse(
+        apiClient.genres[':id'].$delete({
+          param: { id: deleteDialog.genreId },
+        }),
+      );
 
-      if (response.ok) {
-        toast.success('Genre deleted successfully');
-        revalidator.revalidate();
-      } else {
-        const errorData = await response.json();
-        toast.error(
-          errorData.error || 'Failed to delete genre. Please try again.',
-        );
-      }
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      toast.success(`"${deleteDialog.genreName}" deleted successfully!`);
+      revalidator.revalidate();
     } catch (error) {
-      toast.error('An error occurred while deleting the genre.');
+      if (error instanceof DetailedError) {
+        toast.error(error.message);
+      } else {
+        toast.error('An error occurred while deleting the genre.');
+      }
     } finally {
       setDeleteDialog({ open: false });
     }

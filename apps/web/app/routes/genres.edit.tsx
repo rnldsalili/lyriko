@@ -1,3 +1,4 @@
+import { DetailedError, parseResponse } from '@workspace/api-client';
 import { Save } from 'lucide-react';
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
@@ -10,9 +11,9 @@ import apiClient from '@/web/lib/api-client';
 
 import type { Route } from './+types/genres.edit';
 
-export function meta({ params }: Route.MetaArgs) {
+export function meta({ params, loaderData: { data } }: Route.MetaArgs) {
   return [
-    { title: `Edit ${params.slug} - Lyriko` },
+    { title: `Edit ${data.name || params.slug} - Lyriko` },
     {
       name: 'description',
       content: `Edit the ${params.slug} genre`,
@@ -21,18 +22,11 @@ export function meta({ params }: Route.MetaArgs) {
 }
 
 export async function loader({ params }: Route.LoaderArgs) {
-  const response = await apiClient.genres[':slug'].$get({
-    param: { slug: params.slug },
-  });
-
-  if (!response.ok) {
-    if (response.status === 404) {
-      throw new Response('Genre not found', { status: 404 });
-    }
-    throw new Error('Failed to fetch genre');
-  }
-
-  return response.json();
+  return await parseResponse(
+    apiClient.genres[':slug'].$get({
+      param: { slug: params.slug },
+    }),
+  );
 }
 
 export default function EditGenre({ loaderData }: Route.ComponentProps) {
@@ -43,28 +37,26 @@ export default function EditGenre({ loaderData }: Route.ComponentProps) {
   const handleSubmit = async (values: GenreFormData) => {
     setIsSubmitting(true);
     try {
-      const response = await apiClient.genres[':slug'].$put({
-        param: { slug: genre.slug },
-        json: {
-          name: values.name.trim(),
-          description: values.description?.trim() || undefined,
-          color: values.color || undefined,
-        },
-      });
+      const result = await parseResponse(
+        apiClient.genres[':slug'].$put({
+          param: { slug: genre.slug },
+          json: {
+            name: values.name.trim(),
+            description: values.description?.trim() || undefined,
+            color: values.color || undefined,
+          },
+        }),
+      );
 
-      if (response.ok) {
-        const result = await response.json();
-        toast.success('Genre updated successfully!');
-        // Navigate to the updated genre page
-        navigate(`/genres/${result.data.slug}`);
-      } else {
-        const errorData = await response.json();
-        toast.error(
-          errorData.error || 'Failed to update genre. Please try again.',
-        );
-      }
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      toast.success('Genre updated successfully!');
+      // Navigate to the updated genre page
+      navigate(`/genres/${result.data.slug}`);
     } catch (error) {
+      if (error instanceof DetailedError) {
+        toast.error(error.message);
+        return;
+      }
+
       toast.error('An error occurred while updating the genre.');
     } finally {
       setIsSubmitting(false);

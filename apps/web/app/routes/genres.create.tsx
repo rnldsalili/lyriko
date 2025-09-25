@@ -1,3 +1,4 @@
+import { DetailedError, parseResponse } from '@workspace/api-client';
 import { Plus } from 'lucide-react';
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
@@ -27,27 +28,25 @@ export default function CreateGenre() {
   const handleSubmit = async (values: GenreFormData) => {
     setIsSubmitting(true);
     try {
-      const response = await apiClient.genres.$post({
-        json: {
-          name: values.name.trim(),
-          description: values.description?.trim() || undefined,
-          color: values.color || undefined,
-        },
-      });
+      const result = await parseResponse(
+        apiClient.genres.$post({
+          json: {
+            name: values.name.trim(),
+            description: values.description?.trim() || undefined,
+            color: values.color || undefined,
+          },
+        }),
+      );
 
-      if (response.ok) {
-        const result = await response.json();
-        toast.success('Genre created successfully!');
-        // Navigate to the created genre page
-        navigate(`/genres/${result.data.slug}`);
-      } else {
-        const errorData = await response.json();
-        toast.error(
-          errorData.error || 'Failed to create genre. Please try again.',
-        );
-      }
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      toast.success('Genre created successfully!');
+      // Navigate to the created genre page
+      navigate(`/genres/${result.data.slug}`);
     } catch (error) {
+      if (error instanceof DetailedError) {
+        toast.error(error.message);
+        return;
+      }
+
       toast.error('An error occurred while creating the genre.');
     } finally {
       setIsSubmitting(false);

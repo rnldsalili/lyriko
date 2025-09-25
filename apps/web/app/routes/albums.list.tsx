@@ -1,3 +1,4 @@
+import { DetailedError, parseResponse } from '@workspace/api-client';
 import {
   Tooltip,
   TooltipContent,
@@ -21,16 +22,12 @@ export function meta({}: Route.MetaArgs) {
   ];
 }
 
-export async function loader({ params }: Route.LoaderArgs) {
-  const response = await apiClient.albums.$get({
-    query: { page: 1, limit: 10 },
-  });
-
-  if (!response.ok) {
-    throw new Error('Failed to fetch albums');
-  }
-
-  return response.json();
+export async function loader({}: Route.LoaderArgs) {
+  return await parseResponse(
+    apiClient.albums.$get({
+      query: { page: 1, limit: 10 },
+    }),
+  );
 }
 
 export default function Albums({ loaderData }: Route.ComponentProps) {
@@ -51,21 +48,20 @@ export default function Albums({ loaderData }: Route.ComponentProps) {
     if (!deleteDialog.albumId) return;
 
     try {
-      const response = await apiClient.albums[':id'].$delete({
-        param: { id: deleteDialog.albumId },
-      });
+      await parseResponse(
+        apiClient.albums[':id'].$delete({
+          param: { id: deleteDialog.albumId },
+        }),
+      );
 
-      if (response.ok) {
-        toast.success('Album deleted successfully');
-        revalidator.revalidate();
-      } else {
-        const errorData = await response.json();
-        toast.error(
-          errorData.error || 'Failed to delete album. Please try again.',
-        );
-      }
+      toast.success(`"${deleteDialog.albumTitle}" deleted successfully!`);
+      revalidator.revalidate();
     } catch (error) {
-      toast.error('An error occurred while deleting the album.');
+      if (error instanceof DetailedError) {
+        toast.error(error.message);
+      } else {
+        toast.error('An error occurred while deleting the album.');
+      }
     } finally {
       setDeleteDialog({ open: false });
     }
