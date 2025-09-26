@@ -109,9 +109,8 @@ model Artist {
   spotifyUrl String?
 
   // Metadata
-  isVerified Boolean @default(false)
-  country    String?
-  debutYear  Int?
+  country   String?
+  debutYear Int?
 
   // Audit fields
   createdAt DateTime @default(now())
@@ -128,7 +127,6 @@ model Artist {
   @@index([name])
   @@index([slug])
   @@index([createdAt])
-  @@index([isVerified])
   @@map("artist")
 }
 

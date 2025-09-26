@@ -1,6 +1,10 @@
 import { z } from 'zod';
 import { extendZodWithOpenApi } from '@hono/zod-openapi';
-import { paginationResponseSchema, datetimeSchema } from './common';
+import {
+  paginationResponseSchema,
+  datetimeSchema,
+  creatorSchema,
+} from './common';
 
 extendZodWithOpenApi(z);
 
@@ -157,11 +161,11 @@ export const artistResponseSchema = z
     spotifyUrl: z.string().nullable().openapi({
       example: 'https://open.spotify.com/artist/06HL4z0CvFAxyc27GXpf02',
     }),
-    isVerified: z.boolean().openapi({ example: false }),
     country: z.string().nullable().openapi({ example: 'United States' }),
     debutYear: z.number().nullable().openapi({ example: 2006 }),
     createdAt: datetimeSchema,
     updatedAt: datetimeSchema,
+    creator: creatorSchema,
   })
   .openapi('Artist');
 

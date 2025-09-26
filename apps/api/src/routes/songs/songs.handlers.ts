@@ -1,6 +1,7 @@
 import { StatusCode } from '@workspace/constants/status-code';
 
 import { handlePrismaError } from '@/api/lib/prisma-errors';
+import { generateSlug } from '@/api/lib/utils';
 
 import type { AppRouteHandler } from '@/api/lib/app';
 import type {
@@ -53,6 +54,13 @@ export const getSongs: AppRouteHandler<GetSongs> = async (c) => {
           favoriteCount: true,
           createdAt: true,
           updatedAt: true,
+          creator: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+            },
+          },
         },
         orderBy: {
           title: 'asc',
@@ -117,6 +125,13 @@ export const getSong: AppRouteHandler<GetSong> = async (c) => {
         favoriteCount: true,
         createdAt: true,
         updatedAt: true,
+        creator: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
       },
     });
 
@@ -153,13 +168,11 @@ export const getSong: AppRouteHandler<GetSong> = async (c) => {
 export const createSong: AppRouteHandler<CreateSong> = async (c) => {
   const prisma = c.get('prisma');
   const songData = c.req.valid('json');
+  const user = c.get('user');
 
   try {
     // Generate slug from title
-    const slug = songData.title
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, '-')
-      .replace(/^-+|-+$/g, '');
+    const slug = generateSlug(songData.title);
 
     // Convert releaseDate string to Date if provided
     const releaseDate = songData.releaseDate
@@ -171,8 +184,8 @@ export const createSong: AppRouteHandler<CreateSong> = async (c) => {
         ...songData,
         slug,
         releaseDate,
-        createdBy: 'system',
-        updatedBy: 'system',
+        createdBy: user.id,
+        updatedBy: user.id,
       },
       select: {
         id: true,
@@ -195,6 +208,13 @@ export const createSong: AppRouteHandler<CreateSong> = async (c) => {
         favoriteCount: true,
         createdAt: true,
         updatedAt: true,
+        creator: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
       },
     });
 
@@ -226,6 +246,7 @@ export const updateSong: AppRouteHandler<UpdateSong> = async (c) => {
   const prisma = c.get('prisma');
   const { slug } = c.req.valid('param');
   const updateData = c.req.valid('json');
+  const user = c.get('user');
 
   try {
     // Check if song exists
@@ -245,10 +266,7 @@ export const updateSong: AppRouteHandler<UpdateSong> = async (c) => {
 
     // Generate new slug if title is being updated
     const newSlug = updateData.title
-      ? updateData.title
-          .toLowerCase()
-          .replace(/[^a-z0-9]+/g, '-')
-          .replace(/^-+|-+$/g, '')
+      ? generateSlug(updateData.title)
       : undefined;
 
     // Convert releaseDate string to Date if provided
@@ -262,7 +280,7 @@ export const updateSong: AppRouteHandler<UpdateSong> = async (c) => {
         ...updateData,
         ...(newSlug && { slug: newSlug }),
         ...(releaseDate && { releaseDate }),
-        updatedBy: 'system',
+        updatedBy: user.id,
       },
       select: {
         id: true,
@@ -285,6 +303,13 @@ export const updateSong: AppRouteHandler<UpdateSong> = async (c) => {
         favoriteCount: true,
         createdAt: true,
         updatedAt: true,
+        creator: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
       },
     });
 

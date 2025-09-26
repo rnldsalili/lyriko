@@ -1,20 +1,60 @@
 -- CreateTable
 CREATE TABLE "user" (
     "id" TEXT NOT NULL PRIMARY KEY,
+    "name" TEXT,
     "email" TEXT NOT NULL,
-    "username" TEXT NOT NULL,
-    "password" TEXT NOT NULL,
+    "emailVerified" BOOLEAN NOT NULL DEFAULT false,
+    "image" TEXT,
     "firstName" TEXT,
     "lastName" TEXT,
     "bio" TEXT,
-    "avatar" TEXT,
     "isPublic" BOOLEAN NOT NULL DEFAULT true,
-    "emailVerified" BOOLEAN NOT NULL DEFAULT false,
     "emailVerifiedAt" DATETIME,
     "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "createdBy" TEXT NOT NULL,
+    "createdBy" TEXT NOT NULL DEFAULT 'system',
     "updatedAt" DATETIME NOT NULL,
-    "updatedBy" TEXT NOT NULL
+    "updatedBy" TEXT NOT NULL DEFAULT 'system'
+);
+
+-- CreateTable
+CREATE TABLE "session" (
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "expiresAt" DATETIME NOT NULL,
+    "token" TEXT NOT NULL,
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" DATETIME NOT NULL,
+    "ipAddress" TEXT,
+    "userAgent" TEXT,
+    "userId" TEXT NOT NULL,
+    CONSTRAINT "session_userId_fkey" FOREIGN KEY ("userId") REFERENCES "user" ("id") ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+-- CreateTable
+CREATE TABLE "account" (
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "accountId" TEXT NOT NULL,
+    "providerId" TEXT NOT NULL,
+    "userId" TEXT NOT NULL,
+    "accessToken" TEXT,
+    "refreshToken" TEXT,
+    "idToken" TEXT,
+    "accessTokenExpiresAt" DATETIME,
+    "refreshTokenExpiresAt" DATETIME,
+    "scope" TEXT,
+    "password" TEXT,
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" DATETIME NOT NULL,
+    CONSTRAINT "account_userId_fkey" FOREIGN KEY ("userId") REFERENCES "user" ("id") ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+-- CreateTable
+CREATE TABLE "verification" (
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "identifier" TEXT NOT NULL,
+    "value" TEXT NOT NULL,
+    "expiresAt" DATETIME NOT NULL,
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" DATETIME NOT NULL
 );
 
 -- CreateTable
@@ -26,7 +66,6 @@ CREATE TABLE "artist" (
     "image" TEXT,
     "website" TEXT,
     "spotifyUrl" TEXT,
-    "isVerified" BOOLEAN NOT NULL DEFAULT false,
     "country" TEXT,
     "debutYear" INTEGER,
     "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -257,16 +296,13 @@ CREATE TABLE "song_comment" (
 CREATE UNIQUE INDEX "user_email_key" ON "user"("email");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "user_username_key" ON "user"("username");
-
--- CreateIndex
 CREATE INDEX "user_email_idx" ON "user"("email");
 
 -- CreateIndex
-CREATE INDEX "user_username_idx" ON "user"("username");
+CREATE INDEX "user_createdAt_idx" ON "user"("createdAt");
 
 -- CreateIndex
-CREATE INDEX "user_createdAt_idx" ON "user"("createdAt");
+CREATE UNIQUE INDEX "session_token_key" ON "session"("token");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "artist_slug_key" ON "artist"("slug");
@@ -279,9 +315,6 @@ CREATE INDEX "artist_slug_idx" ON "artist"("slug");
 
 -- CreateIndex
 CREATE INDEX "artist_createdAt_idx" ON "artist"("createdAt");
-
--- CreateIndex
-CREATE INDEX "artist_isVerified_idx" ON "artist"("isVerified");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "genre_name_key" ON "genre"("name");

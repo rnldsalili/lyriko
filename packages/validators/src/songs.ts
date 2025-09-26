@@ -1,6 +1,10 @@
 import { z } from 'zod';
 import { extendZodWithOpenApi } from '@hono/zod-openapi';
-import { paginationResponseSchema } from './common';
+import {
+  paginationResponseSchema,
+  datetimeSchema,
+  creatorSchema,
+} from './common';
 
 extendZodWithOpenApi(z);
 
@@ -268,14 +272,9 @@ export const songResponseSchema = z
     }),
     viewCount: z.number().openapi({ example: 0 }),
     favoriteCount: z.number().openapi({ example: 0 }),
-    createdAt: z
-      .string()
-      .datetime()
-      .openapi({ example: '2023-01-01T00:00:00Z' }),
-    updatedAt: z
-      .string()
-      .datetime()
-      .openapi({ example: '2023-01-01T00:00:00Z' }),
+    createdAt: datetimeSchema,
+    updatedAt: datetimeSchema,
+    creator: creatorSchema,
   })
   .openapi('Song');
 

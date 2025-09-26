@@ -1,6 +1,7 @@
 import { StatusCode } from '@workspace/constants/status-code';
 
 import { handlePrismaError } from '@/api/lib/prisma-errors';
+import { generateSlug } from '@/api/lib/utils';
 
 import type { AppRouteHandler } from '@/api/lib/app';
 import type {
@@ -37,11 +38,17 @@ export const getArtists: AppRouteHandler<GetArtists> = async (c) => {
           image: true,
           website: true,
           spotifyUrl: true,
-          isVerified: true,
           country: true,
           debutYear: true,
           createdAt: true,
           updatedAt: true,
+          creator: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+            },
+          },
         },
         orderBy: {
           name: 'asc',
@@ -93,11 +100,17 @@ export const getArtist: AppRouteHandler<GetArtist> = async (c) => {
         image: true,
         website: true,
         spotifyUrl: true,
-        isVerified: true,
         country: true,
         debutYear: true,
         createdAt: true,
         updatedAt: true,
+        creator: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
       },
     });
 
@@ -134,20 +147,18 @@ export const getArtist: AppRouteHandler<GetArtist> = async (c) => {
 export const createArtist: AppRouteHandler<CreateArtist> = async (c) => {
   const prisma = c.get('prisma');
   const artistData = c.req.valid('json');
+  const user = c.get('user');
 
   try {
     // Generate slug from name
-    const slug = artistData.name
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, '-')
-      .replace(/^-+|-+$/g, '');
+    const slug = generateSlug(artistData.name);
 
     const artist = await prisma.artist.create({
       data: {
         ...artistData,
         slug,
-        createdBy: 'system',
-        updatedBy: 'system',
+        createdBy: user.id,
+        updatedBy: user.id,
       },
       select: {
         id: true,
@@ -157,11 +168,17 @@ export const createArtist: AppRouteHandler<CreateArtist> = async (c) => {
         image: true,
         website: true,
         spotifyUrl: true,
-        isVerified: true,
         country: true,
         debutYear: true,
         createdAt: true,
         updatedAt: true,
+        creator: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
       },
     });
 
@@ -193,6 +210,7 @@ export const updateArtist: AppRouteHandler<UpdateArtist> = async (c) => {
   const prisma = c.get('prisma');
   const { slug } = c.req.valid('param');
   const updateData = c.req.valid('json');
+  const user = c.get('user');
 
   try {
     // Check if artist exists
@@ -211,19 +229,14 @@ export const updateArtist: AppRouteHandler<UpdateArtist> = async (c) => {
     }
 
     // Generate new slug if name is being updated
-    const newSlug = updateData.name
-      ? updateData.name
-          .toLowerCase()
-          .replace(/[^a-z0-9]+/g, '-')
-          .replace(/^-+|-+$/g, '')
-      : undefined;
+    const newSlug = updateData.name ? generateSlug(updateData.name) : undefined;
 
     const artist = await prisma.artist.update({
       where: { id: existingArtist.id },
       data: {
         ...updateData,
         ...(newSlug && { slug: newSlug }),
-        updatedBy: 'system',
+        updatedBy: user.id,
       },
       select: {
         id: true,
@@ -233,11 +246,17 @@ export const updateArtist: AppRouteHandler<UpdateArtist> = async (c) => {
         image: true,
         website: true,
         spotifyUrl: true,
-        isVerified: true,
         country: true,
         debutYear: true,
         createdAt: true,
         updatedAt: true,
+        creator: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
       },
     });
 

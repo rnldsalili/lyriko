@@ -2,8 +2,8 @@ import { z } from 'zod';
 import { extendZodWithOpenApi } from '@hono/zod-openapi';
 import {
   paginationResponseSchema,
-  emailSchema,
   datetimeSchema,
+  creatorSchema,
 } from './common';
 
 extendZodWithOpenApi(z);
@@ -86,19 +86,7 @@ export const genreResponseSchema = z
     color: z.string().nullable().openapi({ example: '#FF5722' }),
     createdAt: datetimeSchema,
     updatedAt: datetimeSchema,
-    creator: z
-      .object({
-        id: z.string().openapi({ example: 'clm7x8y9z0000abcdef123456' }),
-        name: z.string().nullable().openapi({ example: 'John Doe' }),
-        email: emailSchema,
-      })
-      .openapi({
-        example: {
-          id: 'clm7x8y9z0000abcdef123456',
-          name: 'John Doe',
-          email: 'john@example.com',
-        },
-      }),
+    creator: creatorSchema,
   })
   .openapi('Genre');
 
