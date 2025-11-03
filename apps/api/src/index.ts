@@ -27,9 +27,6 @@ export type Env = {
 
 const app = createRouter();
 
-// Global middleware
-// app.use('*', cors());
-
 app.use(
   '/api/*',
   cors({

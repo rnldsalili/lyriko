@@ -1,8 +1,8 @@
 import { createRouter } from '@/api/lib/app';
 import albums from '@/api/routes/albums/albums.index';
 import artists from '@/api/routes/artists/artists.index';
+import assets from '@/api/routes/assets/assets.index';
 import genres from '@/api/routes/genres/genres.index';
-import playlists from '@/api/routes/playlists/playlists.index';
 import songs from '@/api/routes/songs/songs.index';
 import users from '@/api/routes/users/users.index';
 
@@ -17,7 +17,7 @@ export function registerRoutes(app: Router) {
     .route(API_PREFIX, artists)
     .route(API_PREFIX, albums)
     .route(API_PREFIX, songs)
-    .route(API_PREFIX, playlists);
+    .route(API_PREFIX, assets);
 }
 
 // Stand alone router type used for api client

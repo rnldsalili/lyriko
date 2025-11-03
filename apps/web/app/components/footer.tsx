@@ -11,7 +11,7 @@ export default function Footer() {
       { name: 'Albums', href: '/albums' },
       { name: 'Songs', href: '/songs' },
       { name: 'Genres', href: '/genres' },
-      { name: 'Playlists', href: '/playlists' },
+
       { name: 'Search', href: '/search' },
     ],
     support: [
@@ -55,8 +55,8 @@ export default function Footer() {
             </Link>
             <p className="mt-4 text-muted-foreground text-sm max-w-md">
               Discover, explore, and share your favorite music. From artists to
-              albums, songs to playlists - find everything you love about music
-              in one place.
+              albums and songs - find everything you love about music in one
+              place.
             </p>
             <div className="mt-6 flex space-x-4">
               {navigation.social.map((item) => (

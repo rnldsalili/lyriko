@@ -1,4 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
+import { DetailedError, parseResponse } from '@workspace/api-client';
 import { Button } from '@workspace/ui/base/button';
 import {
   Form,
@@ -10,9 +11,13 @@ import {
 } from '@workspace/ui/base/form';
 import { Input } from '@workspace/ui/base/input';
 import { Textarea } from '@workspace/ui/base/textarea';
+import { ImageUpload } from '@workspace/ui/components/image-upload';
 import { useForm } from 'react-hook-form';
 import { Link } from 'react-router';
+import { toast } from 'sonner';
 import { z } from 'zod';
+
+import apiClient from '@/web/lib/api-client';
 
 export const artistFormSchema = z.object({
   name: z
@@ -23,11 +28,7 @@ export const artistFormSchema = z.object({
     .string()
     .max(1000, 'Bio must contain at most 1000 characters')
     .optional(),
-  image: z
-    .string()
-    .url('Image must be a valid URL')
-    .optional()
-    .or(z.literal('')),
+  image: z.string().optional(),
   website: z
     .string()
     .url('Website must be a valid URL')
@@ -93,6 +94,30 @@ export function ArtistForm({
     defaultValues,
   });
 
+  const handleImageUpload = async (file: File): Promise<string> => {
+    try {
+      const result = await parseResponse(
+        apiClient.assets.upload.$post({
+          form: {
+            file: file,
+          },
+        }),
+      );
+
+      toast.success('Image uploaded successfully!');
+      return result.data.fileName;
+    } catch (error) {
+      if (error instanceof DetailedError) {
+        toast.error(error.message);
+      } else {
+        toast.error('Failed to upload image');
+      }
+
+      // Return empty string to indicate failure
+      return '';
+    }
+  };
+
   return (
     <div className="bg-card border border-border rounded-xl p-6 mb-6">
       <Form {...form}>
@@ -131,25 +156,27 @@ export function ArtistForm({
             )}
           />
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Image Field */}
-            <FormField
-              control={form.control}
-              name="image"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Profile Image URL</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder="https://example.com/image.jpg"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+          {/* Image Upload Field */}
+          <FormField
+            control={form.control}
+            name="image"
+            render={({ field }) => (
+              <FormItem>
+                <FormControl>
+                  <ImageUpload
+                    disabled={isSubmitting}
+                    label="Profile Image"
+                    onChange={field.onChange}
+                    onUpload={handleImageUpload}
+                    value={field.value}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Website Field */}
             <FormField
               control={form.control}

@@ -14,4 +14,11 @@
       "migrations_dir": "../../packages/prisma/migrations",
     },
   ],
+  "r2_buckets": [
+    {
+      "binding": "BUCKET",
+      "bucket_name": "lyriko",
+      "preview_bucket_name": "lyriko-preview",
+    },
+  ],
 }

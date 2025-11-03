@@ -207,35 +207,6 @@ CREATE TABLE "song_collaborator" (
 );
 
 -- CreateTable
-CREATE TABLE "playlist" (
-    "id" TEXT NOT NULL PRIMARY KEY,
-    "name" TEXT NOT NULL,
-    "description" TEXT,
-    "coverImage" TEXT,
-    "isPublic" BOOLEAN NOT NULL DEFAULT true,
-    "userId" TEXT NOT NULL,
-    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "createdBy" TEXT NOT NULL,
-    "updatedAt" DATETIME NOT NULL,
-    "updatedBy" TEXT NOT NULL,
-    CONSTRAINT "playlist_userId_fkey" FOREIGN KEY ("userId") REFERENCES "user" ("id") ON DELETE CASCADE ON UPDATE CASCADE
-);
-
--- CreateTable
-CREATE TABLE "playlist_item" (
-    "id" TEXT NOT NULL PRIMARY KEY,
-    "playlistId" TEXT NOT NULL,
-    "songId" TEXT NOT NULL,
-    "position" INTEGER NOT NULL,
-    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "createdBy" TEXT NOT NULL,
-    "updatedAt" DATETIME NOT NULL,
-    "updatedBy" TEXT NOT NULL,
-    CONSTRAINT "playlist_item_playlistId_fkey" FOREIGN KEY ("playlistId") REFERENCES "playlist" ("id") ON DELETE CASCADE ON UPDATE CASCADE,
-    CONSTRAINT "playlist_item_songId_fkey" FOREIGN KEY ("songId") REFERENCES "song" ("id") ON DELETE CASCADE ON UPDATE CASCADE
-);
-
--- CreateTable
 CREATE TABLE "user_favorite" (
     "id" TEXT NOT NULL PRIMARY KEY,
     "userId" TEXT NOT NULL,
@@ -266,7 +237,6 @@ CREATE TABLE "song_rating" (
     "id" TEXT NOT NULL PRIMARY KEY,
     "userId" TEXT NOT NULL,
     "songId" TEXT NOT NULL,
-    "rating" INTEGER NOT NULL,
     "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "createdBy" TEXT NOT NULL,
     "updatedAt" DATETIME NOT NULL,
@@ -428,27 +398,6 @@ CREATE INDEX "song_collaborator_userId_idx" ON "song_collaborator"("userId");
 CREATE UNIQUE INDEX "song_collaborator_songId_userId_key" ON "song_collaborator"("songId", "userId");
 
 -- CreateIndex
-CREATE INDEX "playlist_userId_idx" ON "playlist"("userId");
-
--- CreateIndex
-CREATE INDEX "playlist_isPublic_idx" ON "playlist"("isPublic");
-
--- CreateIndex
-CREATE INDEX "playlist_createdAt_idx" ON "playlist"("createdAt");
-
--- CreateIndex
-CREATE INDEX "playlist_item_playlistId_idx" ON "playlist_item"("playlistId");
-
--- CreateIndex
-CREATE INDEX "playlist_item_songId_idx" ON "playlist_item"("songId");
-
--- CreateIndex
-CREATE UNIQUE INDEX "playlist_item_playlistId_songId_key" ON "playlist_item"("playlistId", "songId");
-
--- CreateIndex
-CREATE UNIQUE INDEX "playlist_item_playlistId_position_key" ON "playlist_item"("playlistId", "position");
-
--- CreateIndex
 CREATE INDEX "user_favorite_userId_idx" ON "user_favorite"("userId");
 
 -- CreateIndex
@@ -474,9 +423,6 @@ CREATE INDEX "song_rating_userId_idx" ON "song_rating"("userId");
 
 -- CreateIndex
 CREATE INDEX "song_rating_songId_idx" ON "song_rating"("songId");
-
--- CreateIndex
-CREATE INDEX "song_rating_rating_idx" ON "song_rating"("rating");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "song_rating_userId_songId_key" ON "song_rating"("userId", "songId");

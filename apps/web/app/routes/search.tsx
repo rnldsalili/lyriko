@@ -12,7 +12,7 @@ export default function Search() {
     <div>
       <h1 className="text-3xl font-bold text-foreground mb-6">Search</h1>
       <p className="text-muted-foreground text-lg">
-        Search for artists, albums, songs, and playlists
+        Search for artists, albums, and songs
       </p>
     </div>
   );

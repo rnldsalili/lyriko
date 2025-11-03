@@ -98,13 +98,17 @@ model ExampleModel {
 
 2. **Generate SQL** (from `packages/prisma`):
 
-   ```bash
-   # Initial migration
-   pnpm dlx prisma migrate diff --from-empty --to-schema-datamodel ./prisma/schema.prisma --script --output migrations/<file>.sql
+```bash
+rm -rf .wrangler && cp -R ../../apps/api/.wrangler .
+```
 
-   # Schema changes
-   pnpm dlx prisma migrate diff --from-local-d1 --to-schema-datamodel ./prisma/schema.prisma --script --output migrations/<file>.sql
-   ```
+```bash
+# Initial migration
+pnpm dlx prisma migrate diff --from-empty --to-schema-datamodel ./prisma/schema.prisma --script --output migrations/<file>.sql
+
+# Schema changes
+pnpm dlx prisma migrate diff --from-local-d1 --to-schema-datamodel ./prisma/schema.prisma --script --output migrations/<file>.sql
+```
 
 3. **Apply** (local must be from `apps/api`):
 

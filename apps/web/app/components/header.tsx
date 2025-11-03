@@ -17,7 +17,7 @@ export default function Header() {
     { name: 'Albums', path: '/albums' },
     { name: 'Songs', path: '/songs' },
     { name: 'Genres', path: '/genres' },
-    { name: 'Playlists', path: '/playlists' },
+
     { name: 'Search', path: '/search' },
   ];
 

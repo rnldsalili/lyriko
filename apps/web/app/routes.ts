@@ -26,8 +26,7 @@ export default [
     route('genres/create', 'routes/genres.create.tsx'),
     route('genres/:slug/edit', 'routes/genres.edit.tsx'),
     route('genres/:slug', 'routes/genres.detail.tsx'),
-    route('playlists', 'routes/playlists.tsx'),
-    route('playlists/:id', 'routes/playlist.tsx'),
+
     route('search', 'routes/search.tsx'),
   ]),
 ] satisfies RouteConfig;

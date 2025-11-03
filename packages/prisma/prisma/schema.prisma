@@ -37,11 +37,11 @@ model User {
   accounts Account[]
 
   // Existing relationships
-  createdSongs    Song[]              @relation("SongCreator")
-  createdArtists  Artist[]            @relation("ArtistCreator")
-  createdAlbums   Album[]             @relation("AlbumCreator")
-  createdGenres   Genre[]             @relation("GenreCreator")
-  playlists       Playlist[]
+  createdSongs   Song[]   @relation("SongCreator")
+  createdArtists Artist[] @relation("ArtistCreator")
+  createdAlbums  Album[]  @relation("AlbumCreator")
+  createdGenres  Genre[]  @relation("GenreCreator")
+
   favorites       UserFavorite[]
   songRatings     SongRating[]
   songComments    SongComment[]
@@ -233,7 +233,6 @@ model Song {
   favorites     UserFavorite[]
   ratings       SongRating[]
   comments      SongComment[]
-  playlistItems PlaylistItem[]
 
   @@index([title])
   @@index([slug])
@@ -363,54 +362,6 @@ model SongCollaborator {
   @@map("song_collaborator")
 }
 
-// Playlist Management
-model Playlist {
-  id          String  @id @default(cuid())
-  name        String
-  description String?
-  coverImage  String?
-  isPublic    Boolean @default(true)
-  userId      String
-
-  // Audit fields
-  createdAt DateTime @default(now())
-  createdBy String
-  updatedAt DateTime @updatedAt
-  updatedBy String
-
-  // Relationships
-  user  User           @relation(fields: [userId], references: [id], onDelete: Cascade)
-  items PlaylistItem[]
-
-  @@index([userId])
-  @@index([isPublic])
-  @@index([createdAt])
-  @@map("playlist")
-}
-
-model PlaylistItem {
-  id         String @id @default(cuid())
-  playlistId String
-  songId     String
-  position   Int
-
-  // Audit fields
-  createdAt DateTime @default(now())
-  createdBy String
-  updatedAt DateTime @updatedAt
-  updatedBy String
-
-  // Relationships
-  playlist Playlist @relation(fields: [playlistId], references: [id], onDelete: Cascade)
-  song     Song     @relation(fields: [songId], references: [id], onDelete: Cascade)
-
-  @@unique([playlistId, songId])
-  @@unique([playlistId, position])
-  @@index([playlistId])
-  @@index([songId])
-  @@map("playlist_item")
-}
-
 // User Interactions
 model UserFavorite {
   id     String @id @default(cuid())
@@ -459,7 +410,7 @@ model SongRating {
   id     String @id @default(cuid())
   userId String
   songId String
-  rating Int // 1-5 stars
+  // rating Int // 1-5 stars
 
   // Audit fields
   createdAt DateTime @default(now())
@@ -474,7 +425,7 @@ model SongRating {
   @@unique([userId, songId])
   @@index([userId])
   @@index([songId])
-  @@index([rating])
+  // @@index([rating])
   @@map("song_rating")
 }
 
