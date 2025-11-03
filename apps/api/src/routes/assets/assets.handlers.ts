@@ -35,7 +35,8 @@ export const uploadAsset: AppRouteHandler<UploadAsset> = async (c) => {
     // Generate unique filename with timestamp
     const timestamp = Date.now();
     const extension = fileName.split('.').pop() || '';
-    const uniqueFileName = `tmp/${timestamp}-${crypto.randomUUID()}.${extension}`;
+    const sanitizedExtension = extension ? `.${extension}` : '';
+    const uniqueFileKey = `tmp/${timestamp}-${crypto.randomUUID()}${sanitizedExtension}`;
 
     // Get Cloudflare R2 binding
     const r2 = c.env.BUCKET;
@@ -51,7 +52,7 @@ export const uploadAsset: AppRouteHandler<UploadAsset> = async (c) => {
     }
 
     // Upload to R2
-    const uploadResult = await r2.put(uniqueFileName, file.stream(), {
+    const uploadResult = await r2.put(uniqueFileKey, file.stream(), {
       customMetadata: {
         originalName: fileName,
         uploadedBy: user.id,
@@ -74,7 +75,7 @@ export const uploadAsset: AppRouteHandler<UploadAsset> = async (c) => {
       {
         status: StatusCode.CREATED,
         data: {
-          fileName: uniqueFileName,
+          fileName: `/${uniqueFileKey}`,
           originalName: fileName,
           size: fileSize,
           type: fileType,

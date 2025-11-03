@@ -99,22 +99,20 @@ export function ArtistForm({
       const result = await parseResponse(
         apiClient.assets.upload.$post({
           form: {
-            file: file,
+            file,
           },
         }),
       );
 
-      toast.success('Image uploaded successfully!');
-      return result.data.fileName;
+      const fileName = result.data.fileName;
+
+      return fileName.startsWith('/') ? fileName : `/${fileName}`;
     } catch (error) {
       if (error instanceof DetailedError) {
-        toast.error(error.message);
-      } else {
-        toast.error('Failed to upload image');
+        throw new Error(error.message);
       }
 
-      // Return empty string to indicate failure
-      return '';
+      throw new Error('Failed to upload image');
     }
   };
 
@@ -168,6 +166,8 @@ export function ArtistForm({
                     label="Profile Image"
                     onChange={field.onChange}
                     onUpload={handleImageUpload}
+                    onError={(message) => toast.error(message)}
+                    onSuccess={(message) => toast.success(message)}
                     value={field.value}
                   />
                 </FormControl>

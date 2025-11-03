@@ -4,6 +4,7 @@ import {
   paginationResponseSchema,
   datetimeSchema,
   creatorSchema,
+  assetReferenceSchema,
 } from './common';
 
 extendZodWithOpenApi(z);
@@ -28,13 +29,11 @@ export const createArtistSchema = z.object({
       example:
         'American singer-songwriter known for narrative songs about her personal life',
     }),
-  image: z
-    .string()
-    .url('Image must be a valid URL')
+  image: assetReferenceSchema
     .optional()
-    .describe('Artist profile image URL')
+    .describe('Artist profile image reference')
     .openapi({
-      example: 'https://example.com/artist-image.jpg',
+      example: '/assets/1704067200000-abc123def.jpg',
     }),
   website: z
     .string()
@@ -91,13 +90,11 @@ export const updateArtistSchema = z.object({
       example:
         'American singer-songwriter known for narrative songs about her personal life',
     }),
-  image: z
-    .string()
-    .url('Image must be a valid URL')
+  image: assetReferenceSchema
     .optional()
-    .describe('Artist profile image URL')
+    .describe('Artist profile image reference')
     .openapi({
-      example: 'https://example.com/artist-image.jpg',
+      example: '/assets/1704067200000-abc123def.jpg',
     }),
   website: z
     .string()
@@ -153,7 +150,7 @@ export const artistResponseSchema = z
         'American singer-songwriter known for narrative songs about her personal life',
     }),
     image: z.string().nullable().openapi({
-      example: 'https://example.com/artist-image.jpg',
+      example: '/assets/1704067200000-abc123def.jpg',
     }),
     website: z.string().nullable().openapi({
       example: 'https://taylorswift.com',

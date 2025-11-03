@@ -12,6 +12,7 @@ When adding new features or making changes:
 - Follow the same naming conventions, file organization, and architectural patterns
 - Use the same libraries, utilities, and approaches already established
 - Maintain consistency in error handling, validation, and response formats
+- Prefer `type` aliases over `interface` for simple type declarations
 
 ## Stack
 

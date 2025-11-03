@@ -1,5 +1,6 @@
 import { StatusCode } from '@workspace/constants/status-code';
 
+import { finalizeAssetPath } from '@/api/lib/assets';
 import { handlePrismaError } from '@/api/lib/prisma-errors';
 import { generateSlug } from '@/api/lib/utils';
 
@@ -152,10 +153,20 @@ export const createArtist: AppRouteHandler<CreateArtist> = async (c) => {
   try {
     // Generate slug from name
     const slug = generateSlug(artistData.name);
+    const { image, ...artistPayload } = artistData;
+
+    const finalizedImage = await finalizeAssetPath({
+      bucket: c.env.BUCKET,
+      fileName: image,
+      targetPrefix: '/assets',
+    });
 
     const artist = await prisma.artist.create({
       data: {
-        ...artistData,
+        ...artistPayload,
+        ...(typeof finalizedImage === 'string'
+          ? { image: finalizedImage }
+          : {}),
         slug,
         createdBy: user.id,
         updatedBy: user.id,
@@ -230,12 +241,25 @@ export const updateArtist: AppRouteHandler<UpdateArtist> = async (c) => {
 
     // Generate new slug if name is being updated
     const newSlug = updateData.name ? generateSlug(updateData.name) : undefined;
+    const { image, ...updatePayload } = updateData;
+
+    const finalizedImage =
+      image !== undefined
+        ? await finalizeAssetPath({
+            bucket: c.env.BUCKET,
+            fileName: image,
+            targetPrefix: '/assets',
+          })
+        : undefined;
 
     const artist = await prisma.artist.update({
       where: { id: existingArtist.id },
       data: {
-        ...updateData,
+        ...updatePayload,
         ...(newSlug && { slug: newSlug }),
+        ...(typeof finalizedImage === 'string'
+          ? { image: finalizedImage }
+          : {}),
         updatedBy: user.id,
       },
       select: {

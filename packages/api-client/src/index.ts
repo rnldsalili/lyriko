@@ -14,15 +14,21 @@ const createClient = (...args: Parameters<typeof hc>) => {
 
   return hc<APIClientRouter>(baseURL, {
     fetch: (input: RequestInfo | URL, requestInit?: RequestInit) => {
+      const headers = new Headers(requestInit?.headers);
+
+      const hasBody =
+        requestInit?.body !== undefined && requestInit?.body !== null;
+      const isFormData = requestInit?.body instanceof FormData;
+
+      if (hasBody && !isFormData && !headers.has('Content-Type')) {
+        headers.set('Content-Type', 'application/json');
+      }
+
       return fetch(`${input}`, {
-        method: requestInit?.method || 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          ...requestInit?.headers,
-        },
-        credentials: 'include',
-        body: requestInit?.body,
         ...requestInit,
+        method: requestInit?.method || 'GET',
+        headers,
+        credentials: 'include',
       });
     },
     ...options,

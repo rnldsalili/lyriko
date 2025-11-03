@@ -152,3 +152,38 @@ export const creatorSchema = z
       email: 'john@example.com',
     },
   });
+
+const isValidAssetReference = (value: string) => {
+  const trimmed = value.trim();
+
+  if (!trimmed) {
+    return false;
+  }
+
+  if (trimmed.startsWith('/')) {
+    return trimmed.length > 1;
+  }
+
+  if (trimmed.startsWith('tmp/')) {
+    return trimmed.length > 4;
+  }
+
+  try {
+    new URL(trimmed);
+    return true;
+  } catch {
+    return false;
+  }
+};
+
+export const assetReferenceSchema = z
+  .string({
+    message: 'Asset reference must be a string',
+  })
+  .refine(isValidAssetReference, {
+    message: 'Asset reference must be a valid URL or start with /',
+  })
+  .describe('Reference to an uploaded asset')
+  .openapi({
+    example: '/assets/1704067200000-abc123def.jpg',
+  });

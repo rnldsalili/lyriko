@@ -30,7 +30,7 @@ export const uploadAssetResponseSchema = z
       .string()
       .describe('Unique filename generated for the uploaded file')
       .openapi({
-        example: '1704067200000-abc123def-456.jpg',
+        example: '/tmp/1704067200000-abc123def-456.jpg',
       }),
     originalName: z
       .string()
